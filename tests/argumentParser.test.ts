@@ -1,10 +1,10 @@
-import {parse} from "../src/argumentParser";
+import {getArguments} from "../src/argumentParser";
 
 describe('The argument parser', () => {
     it('should parse empty function', () => {
         function fun() {}
 
-        const s = parse(fun);
+        const s = getArguments(fun);
 
         expect(s.arguments.length).toBe(0);
     });
@@ -13,7 +13,7 @@ describe('The argument parser', () => {
         // @ts-ignore
         function fun(a) {}
 
-        const s = parse(fun);
+        const s = getArguments(fun);
 
         expect(s.arguments).toContain('a');
     });
@@ -22,7 +22,7 @@ describe('The argument parser', () => {
         // @ts-ignore
         function fun(a, b, c) {}
 
-        const s = parse(fun);
+        const s = getArguments(fun);
 
         expect(s.arguments).toContain('a');
         expect(s.arguments).toContain('b');
@@ -33,7 +33,7 @@ describe('The argument parser', () => {
         // @ts-ignore
         const fun = function(a, b, c) {}
 
-        const s = parse(fun);
+        const s = getArguments(fun);
 
         expect(s.arguments).toContain('a');
         expect(s.arguments).toContain('b');
@@ -44,7 +44,7 @@ describe('The argument parser', () => {
         // @ts-ignore
         const fun = function named(a, b, c) {}
 
-        const s = parse(fun);
+        const s = getArguments(fun);
 
         expect(s.arguments).toContain('a');
         expect(s.arguments).toContain('b');
@@ -54,29 +54,30 @@ describe('The argument parser', () => {
     it('should parse function as expression', () => {
         const fun = (function() {});
 
-        const s = parse(fun);
+        const s = getArguments(fun);
 
         expect(s.arguments.length).toBe(0);
     });
 
-    it('should parse arrow function without s.arguments', () => {
-        const fun = () => {}
-
-        const s = parse(fun);
-
-        expect(s.arguments.length).toBe(0);
-    });
-
-    it('should parse function as expression', () => {
-        // @ts-ignore
-        const fun = ((first, second, third) => {});
-
-        const s = parse(fun);
-
-        expect(s.arguments).toContain('first');
-        expect(s.arguments).toContain('second');
-        expect(s.arguments).toContain('third');
-    });
+    // arrow support is removed
+    // it('should parse arrow function without s.arguments', () => {
+    //     const fun = () => {}
+    //
+    //     const s = parse(fun);
+    //
+    //     expect(s.arguments.length).toBe(0);
+    // });
+    //
+    // it('should parse arrow function as expression', () => {
+    //     // @ts-ignore
+    //     const fun = ((first, second, third) => {});
+    //
+    //     const s = parse(fun);
+    //
+    //     expect(s.arguments).toContain('first');
+    //     expect(s.arguments).toContain('second');
+    //     expect(s.arguments).toContain('third');
+    // });
 
     it('should parse class without s.arguments', () => {
         class C {
@@ -84,7 +85,7 @@ describe('The argument parser', () => {
             }
         }
 
-        const s = parse(C);
+        const s = getArguments(C);
 
         expect(s.arguments.length).toBe(0);
     });
@@ -96,7 +97,7 @@ describe('The argument parser', () => {
             }
         }
 
-        const s = parse(C);
+        const s = getArguments(C);
 
         expect(s.arguments).toContain('a');
         expect(s.arguments).toContain('second_');
@@ -108,7 +109,7 @@ describe('The argument parser', () => {
             }
         }
 
-        const s = parse(c);
+        const s = getArguments(c);
 
         expect(s.arguments.length).toBe(0);
     });
@@ -120,7 +121,7 @@ describe('The argument parser', () => {
             }
         }
 
-        const s = parse(c);
+        const s = getArguments(c);
 
         expect(s.arguments).toContain('a');
         expect(s.arguments).toContain('b');
@@ -132,7 +133,7 @@ describe('The argument parser', () => {
     it('should parse class with implicit constructor', () => {
         class C { }
 
-        const s = parse(C);
+        const s = getArguments(C);
 
         expect(s.arguments.length).toBe(0);
     });
@@ -140,7 +141,7 @@ describe('The argument parser', () => {
     it('should parse class expression with implicit constructor', () => {
         const c = class C { }
 
-        const s = parse(c);
+        const s = getArguments(c);
 
         expect(s.arguments.length).toBe(0);
     });
@@ -151,10 +152,10 @@ describe('The argument parser', () => {
     // });
 
     it('should not support anonymous function', () => {
-        expect(() => parse(function() { })).toThrowError();
+        expect(() => getArguments(function() { })).toThrowError();
     });
 
     it('should not support anonymous arrow function', () => {
-        expect(() => parse(() => { })).toThrowError();
+        expect(() => getArguments(() => { })).toThrowError();
     });
 });

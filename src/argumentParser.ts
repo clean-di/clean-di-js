@@ -1,43 +1,41 @@
-import {FunctionLike, FunctionLikeStructure, FunctionType} from "./types";
+import {FunctionLike} from "./types";
 import {includes} from "./pollyfills";
 
-interface ParsedFunctionStructure {
+const enum FunctionType {
+    Function, Class, ArrowFunction
+}
+
+interface FunctionStructure {
     type: FunctionType,
     src: string,
-    name: string
 }
 
-export function parse(fun: FunctionLike): FunctionLikeStructure {
-    const str = getFunctionStructure(fun);
-    const args = FunctionLikeArgumentParser.build(str.type).getArguments(str.src);
-
-    return {
-        name: str.name,
-        type: str.type,
-        arguments: args,
-        ref: fun
-    };
+export function getArguments(fn: FunctionLike): string[] {
+    const str = getFunctionStructure(fn);
+    return FunctionLikeArgumentParser.build(str.type).getArguments(str.src);
 }
 
-function getFunctionStructure(fun: FunctionLike): ParsedFunctionStructure {
-    if (typeof fun !== 'function')
-        throw `The type is ${typeof fun} and type function is required`;
+function getFunctionStructure(fn: FunctionLike): FunctionStructure {
+    if (typeof fn !== 'function')
+        throw `The type is ${typeof fn} and type function is required`;
 
-    const name = fun.name;
+    const name = fn.name;
     if (name == null || name.length === 0)
         throw 'Anonymous functions are not supported due to untraceability';
 
-    const props = Object.getOwnPropertyNames(fun);
-    const src = getCleanedSource(fun);
+    const props = Object.getOwnPropertyNames(fn);
+    const src = getCleanedSource(fn);
 
     if (isFunction(props, src))
-        return {name, type: FunctionType.Function, src};
+        return {type: FunctionType.Function, src};
 
     if (isClass(props, src))
-        return {name, type: FunctionType.Class, src};
+        return {type: FunctionType.Class, src};
 
     if (isArrow(props))
-        return {name, type: FunctionType.ArrowFunction, src};
+        throw 'Arrow functions are not supported';
+        // maybe in a future version we can support arrow somehow
+        //return {type: FunctionType.ArrowFunction, src};
 
     throw `The type is composed of ${props} and it is not recognized`;
 
@@ -67,7 +65,7 @@ function getCleanedSource(fun: FunctionLike) {
 
 abstract class FunctionLikeArgumentParser {
 
-    abstract getArguments(fun: string): string[];
+    abstract getArguments(fn: string): string[];
 
     splitParams(match: RegExpExecArray | null) {
         if (match == null) {
