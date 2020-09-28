@@ -1,3 +1,5 @@
+
+
 type Dict<Name extends string, I> = {[key in Name]: I};
 
 function f<S extends string, O>(name: S, o: O): Dict<S, O> {
@@ -23,3 +25,25 @@ let r2 = g(r, 'contar', 1)
 
 console.log(r2.contar + 1);
 console.log(r2.perro.nombre);
+
+
+type ClsParam1<T extends new (p1: any, ...rest: any) => any> = T extends new(p1: infer P, ...rest: any) => any ? P : never;
+
+type ClsParam2<T extends new (p1: any, p2: any, ...rest: any) => any> = T extends new(p1: any, p2: infer P, ...rest: any) => any ? P : never;
+
+type FnParam1<T extends (p1: any, ...rest: any) => any> = T extends (p1: infer P, ...rest: any) => any ? P : never;
+
+type FnParam2<T extends (a: any, b: any, ...rest: any) => any> = T extends (a: any, b: infer P, ...rest: any) => any ? P : never;
+
+function fun1(a: string) {}
+function fun2(a: string, b: number) {}
+
+class Clase {
+    constructor(a: boolean, b: string, c: number) {}
+}
+
+type x = FnParam1<typeof fun2>; // esto es un string
+type z = ClsParam2<typeof Clase>;
+
+const r3 = f('numerito', 2 as FnParam2<typeof fun2>)
+
