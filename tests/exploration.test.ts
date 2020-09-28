@@ -2,19 +2,38 @@ import {deps} from "../src/cosa";
 
 describe('This library should', () => {
 
+    it('', () => {
+    // echar un ojo aquí para más ideas https://github.com/codemix/ts-sql/blob/master/src/Parser.ts
+    });
 
     it('debe devoler instancia de dependencia de primer nivel (sin subdependencias)', () => {
 
-        class A {}
-
+        class A {
+            readonly cosa = 1234;
+        };
 
         const a = deps({fn: A}).get(A);
+
+        expect(a.cosa).toBe(1234);
+        expect(a instanceof A).toBeTruthy();
     });
 
     it('las dependencias y sus dependientes se pueden tipar para que si se refactoriza, no compile en typescript y' +
         'te des cuenta (que no te darías cuenta por el mecanismo de mirar el arbol de dependencias en base al nombre)', () => {
+        interface ICoche {
+            arrancar(): void;
+            frenar(): void;
+        };
+        class Coche implements ICoche {
+            arrancar(): void {
+                console.log('brum brum');
+            }
+            frenar(): void {
+                console.log('ñiiiiii')
+            }
+        };
 
-        deps<dependencia, dependiente>({ctor: Dependencia}); // donde dependencia debe caber en dependiente
+        deps<Coche, ICoche>({fn: Coche});
     });
 
     it('rancho', () => {

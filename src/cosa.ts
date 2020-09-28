@@ -24,7 +24,7 @@ interface FunctionMapping {
     scope?: DependencyScope;
 }
 
-export function deps(mapping: Mapping) {
+export function deps<Imp extends Dep, Dep=any>(mapping: Mapping) {
     return new DependencyScope().deps(mapping);
 }
 
@@ -39,7 +39,7 @@ export class DependencyScope {
     // add(fun: Class, ...funs: Class[]): Context;
     // add(fun: Class, ...alias: string[]): Context;
     // add(fun: Class, alias?: string | string[], ctx?: Context): Context
-    deps(mapping: Mapping): DependencyScope
+    deps<Imp extends Dep, Dep=any>(mapping: Mapping<Imp, Dep>): DependencyScope
     // add()
     {
         this.mappings.push(mapping);
