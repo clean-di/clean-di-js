@@ -1,79 +1,198 @@
-import {Class, FunctionLike, FunctionWithReturn, Instance} from "./types";
+import {AsyncType, Binding, Class, FunctionLike, FunctionWithReturn, Instance} from "./types";
 import {getArguments} from "./argumentParser";
 
 
-interface ResolverOptions {
-    depsTree?: any;
+
+type Dependency =
+    ClassDependency<any, any> |
+    FunctionDependency<any, any> |
+    ValueDependency<any, any> |
+    AsyncDependency<any, any, any>;
+
+interface BaseDependency<A extends string> {
+    alias: A | [A, ...string[]];
+    deps?: DependencyScope<any>;
+    singleton?: boolean;
 }
 
-const enum Directive {
-    Singleton,
-    Stateless,
-    SharedSigleton
+interface ClassDependency<A extends string, T extends Class> extends BaseDependency<A> {
+    cls: T;
 }
 
-interface Mapping {
-    fn: Class;
-    alias?: string[];
-    scope?: DependencyScope;
+interface FunctionDependency<A extends string, T extends Function> extends BaseDependency<A> {
+    fn: T;
 }
 
-interface FunctionMapping {
+interface ValueDependency<A extends string, T> extends BaseDependency<A> {
+    val: T;
+}
+
+interface AsyncDependency<A extends string, U, T extends AsyncType<U>> extends BaseDependency<A> {
+    async: T;
+}
+
+type DependencyImplementation =
+    ClassDependencyImplementation<any, any> |
+    FunctionDependencyImplementation<any, any> |
+    ValueDependencyImplementation<any, any> |
+    AsyncDependency<any, any, any>;
+
+interface BaseDependencyImplementation<A extends string> {
+    alias: A | [A, ...string[]];
+    deps? : DependencyImplementation; // todo should this be changed by dependency chain?
+    singleton?: boolean; // means call once, and reuse value the following times
+}
+
+interface ClassDependencyImplementation<A extends string, T extends Class> extends BaseDependencyImplementation<A> {
+    type: 'cls';
+    reference: T;
     arguments: string[];
-    reference: FunctionLike;
-    scope?: DependencyScope;
 }
 
-export function deps<Imp extends Dep, Dep=any>(mapping: Mapping) {
-    return new DependencyScope().deps(mapping);
+interface FunctionDependencyImplementation<A extends string, T extends Function> extends BaseDependencyImplementation<A> {
+    type: 'fn';
+    reference: T;
+    arguments: string[];
 }
 
-export class DependencyScope {
+interface ValueDependencyImplementation<A extends string, T> extends BaseDependencyImplementation<A> {
+    type: 'val';
+    reference: T;
+}
 
-    // this collection is just for debug purpose
-    private readonly mappings: Mapping[] = [];
+interface AsyncDependencyImplementation<A extends string, U, T extends AsyncType<U>> extends BaseDependencyImplementation<A> {
+    type: 'async';
+    reference: T;
+    arguments?: string[];
+    timeout?: number; // defaults to infinite
+}
 
-    private readonly nameToFn: { [index:string]: FunctionMapping } = {};
 
-    // add(fun: Class): Context;
-    // add(fun: Class, ...funs: Class[]): Context;
-    // add(fun: Class, ...alias: string[]): Context;
-    // add(fun: Class, alias?: string | string[], ctx?: Context): Context
-    deps<Imp extends Dep, Dep=any>(mapping: Mapping<Imp, Dep>): DependencyScope
-    // add()
-    {
-        this.mappings.push(mapping);
+export function add<A extends string, T extends Class>(dep: ClassDependency<A, T>): DependencyScope<Binding<A, Instance<T>>>;
+export function add<A extends string, T extends FunctionWithReturn>(dep: FunctionDependency<A, T>): DependencyScope<Binding<A, ReturnType<T>>>;
+export function add<A extends string, T>(dep: ValueDependency<A, T>): DependencyScope<Binding<A, T>>;
+export function add<A extends string, U, T extends AsyncType<U>>(dep: AsyncDependency<A, U, T>): DependencyScope<Binding<A, U>>;
+export function add() {
+    return new DependencyScope().add(arguments as any);
+}
 
-        const fnArgs = getArguments(mapping.fn)
-            .map(a => a.toLowerCase());
-        const fnNameAlias = mapping.alias
-            ? mapping.alias.map(a => a.toLowerCase()) :
-            [mapping.fn.name.toLowerCase()];
-        const funMap: FunctionMapping = {
-            arguments: fnArgs,
-            reference: mapping.fn,
-            scope: mapping.scope
-        }
-        fnNameAlias.forEach(a => {
-            if (a in this.nameToFn)
-                throw `${a} already declared as name`;
-            this.nameToFn[a] = funMap;
-        });
+class DependencyScope<B> {
+
+    private readonly _deps: Dependency[] = [];
+    private readonly _aliasUsed = {};
+    //
+    // private readonly nameToCls: { [index:string]: FunctionMapping } = {};
+
+    add<A extends string, T extends Class>(dep: ClassDependency<A, T>): DependencyScope<B & Binding<A, Instance<T>>>;
+    add<A extends string, T extends FunctionWithReturn>(dep: FunctionDependency<A, T>): DependencyScope<B & Binding<A, ReturnType<T>>>;
+    add<A extends string, T>(dep: ValueDependency<A, T>): DependencyScope<B & Binding<A, T>>;
+    add<A extends string, U, T extends AsyncType<U>>(dep: AsyncDependency<A, U, T>): DependencyScope<B & Binding<A, U>>;
+    //add(dep: AsyncDependency<any>): DependencyScope;
+    add() {
+        const dep = arguments[0] as Dependency;
+        DependencyScope.checkDependency(dep, this._aliasUsed);
+        this._deps.push(dep);
+
+        // const clsArgs = getArguments(mapping.cls)
+        //     .map(a => a.toLowerCase());
+        //
+        // const clsAlias = mapping.alias
+        //     ? mapping.alias.map(a => a.toLowerCase()) :
+        //     [mapping.cls.name.toLowerCase()];
+        //
+        // const clsMap: FunctionMapping = {
+        //     arguments: clsArgs,
+        //     reference: mapping.cls,
+        //     scope: mapping.deps
+        // }
+        //
+        // clsAlias.forEach(a => {
+        //     if (a in this.nameToCls)
+        //         throw `${a} already declared as name`;
+        //     this.nameToCls[a] = clsMap;
+        // });
 
         return this;
     }
 
-
-
-
-    get<C extends Class>(cls: C): InstanceType<C>;
-    get<F extends FunctionWithReturn>(fn: F): ReturnType<F>;
-    get(x) {
-
+    private static checkDependency(dep: Dependency, aliasUsed: object) {
+        if ((dep as ClassDependency<any, any>).cls != null)
+            return this.checkClassDependency(dep as ClassDependency<any, any>, aliasUsed);
+        if ((dep as FunctionDependency<any, any>).fn != null)
+            return this.checkFunctionDependency(dep as FunctionDependency<any, any>, aliasUsed);
+        if ((dep as ValueDependency<any, any>).val != null)
+            return this.checkValueDependency(dep as ValueDependency<any, any>, aliasUsed);
+        if ((dep as AsyncDependency<any, any, any>).async != null)
+            return this.checkAsyncDependency(dep as AsyncDependency<any, any, any>, aliasUsed);
+        throw 'The dependency definition must be either a class, a function, a value or an async. Check the API.';
     }
 
+    private static checkClassDependency(dep: ClassDependency<any, any>, aliasUsed: object) {
+        if (typeof dep.cls != 'function')
+            throw 'cls must be a class constructor';
+        this.checkBaseDependency(dep, aliasUsed);
+    }
+
+    private static checkFunctionDependency(dep: FunctionDependency<any, any>, aliasUsed: object) {
+        if (typeof dep.fn != 'function')
+            throw 'fn must be a function';
+        this.checkBaseDependency(dep, aliasUsed);
+    }
+
+    private static checkValueDependency(dep: ValueDependency<any, any>, aliasUsed: object) {
+        const type = typeof dep.val;
+        if (!['number', 'string', 'boolean'].some(t => t === type))
+            throw 'val must be a number, a string or a boolean value';
+        this.checkBaseDependency(dep, aliasUsed);
+    }
+
+    private static checkAsyncDependency(dep: AsyncDependency<any, any, any>, aliasUsed: object) {
+        if (typeof dep.async !== 'function' && !(dep.async instanceof Promise))
+            throw 'async must be an async function or a promise';
+        this.checkBaseDependency(dep, aliasUsed);
+    }
+
+    private static checkBaseDependency(dep: BaseDependency<any>, aliasUsed: object) {
+        const isValid = (s: string) => typeof dep.alias === 'string' && dep.alias.length > 0 && /[a-zA-Z_$][0-9a-zA-Z_$]*/.test(s);
+        const areValid = (ss: string[]) => ss instanceof Array && ss.length > 0 && ss.every(isValid);
+        if (!isValid(dep.alias as string) && !areValid(dep.alias as string[]))
+            throw 'alias must be a string or an array of strings with a valid javascript variable name';
+
+        dep.alias instanceof Array
+            ? this.checkRepeatedAlias(aliasUsed, dep.alias as string[])
+            : this.checkRepeatedAlias(aliasUsed, [dep.alias as string]);
+
+        if (dep.deps != null && !(dep.deps instanceof DependencyScope))
+            throw 'deps must be defined properly';
+        if (dep.deps instanceof DependencyScope) {
+            const sublevelAliasUsed = {};
+            (dep.deps as DependencyScope<any>)._deps.forEach(d => this.checkDependency(d, sublevelAliasUsed));
+        }
+    }
+
+    private static checkRepeatedAlias(usedAlias: object, alias: string[]) {
+        alias.forEach(a => {
+            if (a in usedAlias) {
+                throw `{a} alias already used`;
+            }
+            (usedAlias as any)[a] = true;
+        });
+    }
+
+    build(): B {
+        throw 'not implemented';
+        // build dependency implementations with paths & caches
+        //Object.defineProperty()
+    }
 
 
 
 }
 
+class ProviderWhatever {
+    // get<C extends Class>(cls: C): InstanceType<C>;
+    // get<F extends FunctionWithReturn>(fn: F): ReturnType<F>;
+    // get(x) {
+    //
+    // }
+}

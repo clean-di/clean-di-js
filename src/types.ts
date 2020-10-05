@@ -8,7 +8,9 @@ export type FunctionLike = Function | Class;
 
 export type FunctionWithReturn = (...args: any) => any;
 
-export interface DependencyTree {
-    leafs: DependencyTree[];
-}
+export type AsyncType<T> =
+    Promise<T> |
+    ((...args: any) => Promise<T>);
 
+
+export type Binding<Name extends string, I> = {[key in Name]: I};

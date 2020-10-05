@@ -1,4 +1,4 @@
-import {deps} from "../src/cosa";
+import {add} from "../src/cosa";
 
 describe('This library should', () => {
 
@@ -12,7 +12,7 @@ describe('This library should', () => {
             readonly cosa = 1234;
         };
 
-        const a = deps({fn: A}).get(A);
+        const a = add({cls: A}).get(A);
 
         expect(a.cosa).toBe(1234);
         expect(a instanceof A).toBeTruthy();
@@ -33,7 +33,7 @@ describe('This library should', () => {
             }
         };
 
-        deps<Coche, ICoche>({fn: Coche});
+        add<Coche, ICoche>({cls: Coche});
     });
 
     it('rancho', () => {
@@ -62,9 +62,9 @@ describe('This library should', () => {
 
         class C {}
 
-        const a = deps({fn: A})
-            .deps({fn: B})
-            .deps({fn: C})
+        const a = add({cls: A})
+            .add({cls: B})
+            .add({cls: C})
             .get(A);
     });
 
@@ -84,9 +84,9 @@ describe('This library should', () => {
         class C {}
         class C2 {}
 
-        const a = deps({fn: A})
-            .deps({fn: B, deps: deps({fn: C2, alias: c)}) // se usará C2 al resolver c de b
-            .deps({fn: C})
+        const a = add({cls: A})
+            .add({cls: B, deps: add({cls: C2, alias: c)}) // se usará C2 al resolver c de b
+            .add({cls: C})
             .get(A);
     });
 
@@ -112,7 +112,7 @@ describe('This library should', () => {
             }
         }
 
-        const a = deps({fn: A})
+        const a = add({cls: A})
             .get(A); // inyectaría b como null
     });
 
@@ -123,7 +123,7 @@ describe('This library should', () => {
             }
         }
 
-        const a = deps({fn: A, nonNullDeps: true})
+        const a = add({cls: A, nonNullDeps: true})
             .get(A); // entonces petaría porque no encuentra b
     });
 
@@ -132,8 +132,8 @@ describe('This library should', () => {
         const f = (g: () => {}) => {};
         const g = () => {};
 
-        const nombre = deps({arrow: f})
-            .deps({arrow: g})
+        const nombre = add({arrow: f})
+            .add({arrow: g})
             .get<()=>{}>(f);
     });
 
@@ -141,7 +141,7 @@ describe('This library should', () => {
 
         // ... dependencias
 
-        const nombre = deps(...)
+        const nombre = add(...)
             .get<()=>{}>('alias');
     });
 
@@ -156,7 +156,7 @@ describe('This library should', () => {
         //const o = {a: 1, b: 2};
         //const o = Promise.resolve(noseque); esto puede ser interesante?? o solo para funciones?
 
-        const nombre = deps({val: s, alias:'nombre'}).get<string>('nombre');
+        const nombre = add({val: s, alias:'nombre'}).get<string>('nombre');
     });
 
     it('si las dependencias tipo funciones (que no constructores) devuelven promesas,' +
@@ -169,8 +169,8 @@ describe('This library should', () => {
         };
         const f = async () => {};
 
-        const a = deps(A)
-            .deps(f)
+        const a = add(A)
+            .add(f)
             .get<Promise<InstanceType<A>>>(A);  // o mejor .getAsync(A) y que sea promesa es implicito
     });
 
@@ -190,9 +190,9 @@ describe('This library should', () => {
 
         class C {}
 
-        const areDepsOk = deps({fn: A})
-            .deps({fn: B})
-            .deps({fn: C})
+        const areDepsOk = add({cls: A})
+            .add({cls: B})
+            .add({cls: C})
             .canGet(A);
     });
 
@@ -210,9 +210,9 @@ describe('This library should', () => {
 
         class C {}
 
-        const areDepsOk = deps({fn: A, lifespan: transient}) // se crea cada vez
-            .deps({fn: B, lifespan: singleton})  // se crea una sola vez y se reutiliza
-            .deps({fn: C, lifespan: }) // por defecto debe ser transient
+        const areDepsOk = add({cls: A, lifespan: transient}) // se crea cada vez
+            .add({cls: B, lifespan: singleton})  // se crea una sola vez y se reutiliza
+            .add({cls: C, lifespan: }) // por defecto debe ser transient
             .canGet(A);
 
         // quizá haya otras lifespan interesantes como singleton que caduque, singleton por key, o yo que se
@@ -223,8 +223,8 @@ describe('This library should', () => {
         const f = () => {};
         const g = () => {};
 
-        deps({fn: f, lifespan: transient}) // se llama cada vez
-        .deps({fn: g, lifespan: memoize}) // se llama una vez y se guarda el resultado para las demás veces
+        add({cls: f, lifespan: transient}) // se llama cada vez
+        .add({cls: g, lifespan: memoize}) // se llama una vez y se guarda el resultado para las demás veces
     });
 
     it('las dependencias de tipo valor se pueden configurar para clonado profundo o no', () => {

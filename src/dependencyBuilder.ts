@@ -15,7 +15,3 @@ export const enum ArgumentNamingStyle {
 }
 
 
-export function buildDependencyTree(funs: FunctionLikeStructure[]): DependencyTree {
-
-}
-
