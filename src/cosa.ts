@@ -32,37 +32,37 @@ interface AsyncDependency<A extends string, U, T extends AsyncType<U>> extends B
 }
 
 type DependencyImplementation =
-    ClassDependencyImplementation<any, any> |
-    FunctionDependencyImplementation<any, any> |
-    ValueDependencyImplementation<any, any> |
-    AsyncDependency<any, any, any>;
+    ClassDependencyImplementation |
+    FunctionDependencyImplementation |
+    ValueDependencyImplementation |
+    AsyncDependencyImplementation;
 
-interface BaseDependencyImplementation<A extends string> {
-    alias: A | [A, ...string[]];
+interface BaseDependencyImplementation {
+    alias: string | [string, ...string[]];
     deps? : DependencyImplementation; // todo should this be changed by dependency chain?
     singleton?: boolean; // means call once, and reuse value the following times
 }
 
-interface ClassDependencyImplementation<A extends string, T extends Class> extends BaseDependencyImplementation<A> {
+interface ClassDependencyImplementation extends BaseDependencyImplementation {
     type: 'cls';
-    reference: T;
+    reference: Class;
     arguments: string[];
 }
 
-interface FunctionDependencyImplementation<A extends string, T extends Function> extends BaseDependencyImplementation<A> {
+interface FunctionDependencyImplementation extends BaseDependencyImplementation {
     type: 'fn';
-    reference: T;
+    reference: FunctionWithReturn;
     arguments: string[];
 }
 
-interface ValueDependencyImplementation<A extends string, T> extends BaseDependencyImplementation<A> {
+interface ValueDependencyImplementation extends BaseDependencyImplementation {
     type: 'val';
-    reference: T;
+    reference: any;
 }
 
-interface AsyncDependencyImplementation<A extends string, U, T extends AsyncType<U>> extends BaseDependencyImplementation<A> {
+interface AsyncDependencyImplementation extends BaseDependencyImplementation {
     type: 'async';
-    reference: T;
+    reference: AsyncType<any>;
     arguments?: string[];
     timeout?: number; // defaults to infinite
 }
