@@ -6,7 +6,7 @@ describe('The argument parser', () => {
 
         const s = getArguments(fun);
 
-        expect(s.arguments.length).toBe(0);
+        expect(s.length).toBe(0);
     });
 
     it('should parse function with one param', () => {
@@ -15,7 +15,7 @@ describe('The argument parser', () => {
 
         const s = getArguments(fun);
 
-        expect(s.arguments).toContain('a');
+        expect(s).toContain('a');
     });
 
     it('should parse function with many s.arguments', () => {
@@ -24,9 +24,9 @@ describe('The argument parser', () => {
 
         const s = getArguments(fun);
 
-        expect(s.arguments).toContain('a');
-        expect(s.arguments).toContain('b');
-        expect(s.arguments).toContain('c');
+        expect(s).toContain('a');
+        expect(s).toContain('b');
+        expect(s).toContain('c');
     });
 
     it('should parse anonymous function as var', () => {
@@ -35,9 +35,9 @@ describe('The argument parser', () => {
 
         const s = getArguments(fun);
 
-        expect(s.arguments).toContain('a');
-        expect(s.arguments).toContain('b');
-        expect(s.arguments).toContain('c');
+        expect(s).toContain('a');
+        expect(s).toContain('b');
+        expect(s).toContain('c');
     });
 
     it('should parse named function as var', () => {
@@ -46,9 +46,9 @@ describe('The argument parser', () => {
 
         const s = getArguments(fun);
 
-        expect(s.arguments).toContain('a');
-        expect(s.arguments).toContain('b');
-        expect(s.arguments).toContain('c');
+        expect(s).toContain('a');
+        expect(s).toContain('b');
+        expect(s).toContain('c');
     });
 
     it('should parse function as expression', () => {
@@ -56,7 +56,7 @@ describe('The argument parser', () => {
 
         const s = getArguments(fun);
 
-        expect(s.arguments.length).toBe(0);
+        expect(s.length).toBe(0);
     });
 
     // arrow support is removed
@@ -87,7 +87,7 @@ describe('The argument parser', () => {
 
         const s = getArguments(C);
 
-        expect(s.arguments.length).toBe(0);
+        expect(s.length).toBe(0);
     });
 
     it('should parse class with parameters', () => {
@@ -99,8 +99,8 @@ describe('The argument parser', () => {
 
         const s = getArguments(C);
 
-        expect(s.arguments).toContain('a');
-        expect(s.arguments).toContain('second_');
+        expect(s).toContain('a');
+        expect(s).toContain('second_');
     });
 
     it('should parse class expression without parameters', () => {
@@ -111,7 +111,7 @@ describe('The argument parser', () => {
 
         const s = getArguments(c);
 
-        expect(s.arguments.length).toBe(0);
+        expect(s.length).toBe(0);
     });
 
     it('should parse class expression with parameters', () => {
@@ -123,11 +123,11 @@ describe('The argument parser', () => {
 
         const s = getArguments(c);
 
-        expect(s.arguments).toContain('a');
-        expect(s.arguments).toContain('b');
-        expect(s.arguments).toContain('c');
-        expect(s.arguments).toContain('d');
-        expect(s.arguments).toContain('e');
+        expect(s).toContain('a');
+        expect(s).toContain('b');
+        expect(s).toContain('c');
+        expect(s).toContain('d');
+        expect(s).toContain('e');
     });
 
     it('should parse class with implicit constructor', () => {
@@ -135,7 +135,7 @@ describe('The argument parser', () => {
 
         const s = getArguments(C);
 
-        expect(s.arguments.length).toBe(0);
+        expect(s.length).toBe(0);
     });
 
     it('should parse class expression with implicit constructor', () => {
@@ -143,7 +143,7 @@ describe('The argument parser', () => {
 
         const s = getArguments(c);
 
-        expect(s.arguments.length).toBe(0);
+        expect(s.length).toBe(0);
     });
 
     // transpiler destroys this test but it's very unlikely this is an issue
