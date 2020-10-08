@@ -1,4 +1,4 @@
-import {FunctionLike} from "./types";
+import {FunctionLike} from "./utilityTypes";
 import {ArrayUtils} from "./pollyfills";
 
 const enum FunctionType {
@@ -11,8 +11,8 @@ interface FunctionStructure {
 }
 
 export function getArguments(fn: FunctionLike): string[] {
-    const str = getFunctionStructure(fn);
-    return FunctionLikeArgumentParser.build(str.type).getArguments(str.src);
+    const st = getFunctionStructure(fn);
+    return FunctionLikeArgumentParser.build(st.type).getArguments(st.src, fn);
 }
 
 function getFunctionStructure(fn: FunctionLike): FunctionStructure {
@@ -43,12 +43,12 @@ function getFunctionStructure(fn: FunctionLike): FunctionStructure {
         const fi = src.indexOf('function');
         const bi = src.indexOf('{'); // this before function indicates a class instance
         // 'caller' and 'prototype' also part of function only when in non-strict mode but they are not meaningful
-        return fi < bi && [ 'length', 'prototype', 'name' ].every(p => ArrayUtils.includes(props, p));
+        return fi > -1 && fi < bi && [ 'length', 'prototype', 'name' ].every(p => ArrayUtils.includes(props, p));
     }
     function isClass(props: string[], src: string) {
         const ci = src.indexOf('class');
         const bi = src.indexOf('{'); // this before function indicates a class instance
-        return ci < bi && [ 'length', 'prototype', 'name' ].every(p => ArrayUtils.includes(props, p));
+        return ci > -1 && ci < bi && [ 'length', 'prototype', 'name' ].every(p => ArrayUtils.includes(props, p));
     }
     function isArrow(props: string[]) {
         return [ 'length', 'name' ].every(p => ArrayUtils.includes(props, p));
@@ -65,7 +65,7 @@ function getCleanedSource(fun: FunctionLike) {
 
 abstract class FunctionLikeArgumentParser {
 
-    abstract getArguments(fn: string): string[];
+    abstract getArguments(src: string, ref: any): string[];
 
     splitParams(match: RegExpExecArray | null) {
         if (match == null) {
@@ -86,22 +86,34 @@ abstract class FunctionLikeArgumentParser {
 }
 
 class FunctionArgumentParser extends FunctionLikeArgumentParser{
-    getArguments(src: string): string[] {
-        const match = /function\s+[^(]*\(([^)]*)\)/.exec(src);
+    getArguments(src: string, ref: Function): string[] {
+        if (ref.length === 0)
+            return [];
+
+        const match = /function\s*[^(]*\(([^)]*)\)/.exec(src);
+
         return this.splitParams(match);
     }
 }
 
 class ClassArgumentParser extends FunctionLikeArgumentParser {
-    getArguments(src: string): string[] {
-        const match = /(?<!\w)constructor\s+[^(]*\(([^)]*)\)/.exec(src);
+    getArguments(src: string, ref: Function): string[] {
+        if (ref.length === 0)
+            return [];
+
+        const match = /(?<!\w)constructor\s*[^(]*\(([^)]*)\)/.exec(src);
+
         return this.splitParams(match);
     }
 }
 
 class ArrowArgumentParser extends FunctionLikeArgumentParser {
-    getArguments(src: string): string[] {
+    getArguments(src: string, ref: Function): string[] {
+        if (ref.length === 0)
+            return [];
+
         const match = /\(([^)]*)\)\s*=>/.exec(src);
+
         return this.splitParams(match);
     }
 }

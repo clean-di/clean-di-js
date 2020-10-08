@@ -1,4 +1,4 @@
-import {AsyncType, Binding, Class, FunctionLike, FunctionWithReturn, Instance} from "./types";
+import {AsyncType, Binding, Class, FunctionLike, FunctionWithReturn, Instance} from "./utilityTypes";
 import {getArguments} from "./argumentParser";
 import {ArrayUtils, PromiseUtils} from "./pollyfills";
 
@@ -503,6 +503,23 @@ class UnresolvedDependencyConstructor implements DepedencyConstructor {
         return false;
     }
 }
+
+
+
+// idea
+export const enum ArgumentNamingStyle {
+    Exact, // uses the exact parameter value to search for a constructor function
+    LowerCase, // whateverservice
+    UpperCase, // WHATEVERSERVICE
+    CamelCase, // whateverService
+    PascalCase, // WhateverService,
+    SnakeCase, // whatever_service
+    SnakeUpperCase, // WHATEVER_SERVICE
+    LeadingUnderscore = 32, // _(anything)
+    TrailingUnderscore = 64, // (anything)_
+    LeadingDollar = 128 // $(anything)
+}
+
 
 
 

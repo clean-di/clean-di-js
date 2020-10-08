@@ -1,4 +1,5 @@
-import {add} from "../src/cosa";
+import {add} from "../src/depedencyBuilder";
+import instantiate = WebAssembly.instantiate;
 
 describe('This library should', () => {
 
@@ -18,36 +19,39 @@ describe('This library should', () => {
         expect(a.cosa).toBe(1234);
         expect(a instanceof A).toBeTruthy();
     });
-/*
-    it('las dependencias y sus dependientes se pueden tipar para que si se refactoriza, no compile en typescript y' +
-        'te des cuenta (que no te darías cuenta por el mecanismo de mirar el arbol de dependencias en base al nombre)', () => {
-        interface ICoche {
-            arrancar(): void;
-            frenar(): void;
-        };
-        class Coche implements ICoche {
-            arrancar(): void {
-                console.log('brum brum');
-            }
-            frenar(): void {
-                console.log('ñiiiiii')
-            }
-        };
 
-        add<Coche, ICoche>({cls: Coche});
-    });
+    // xit('las dependencias y sus dependientes se pueden tipar para que si se refactoriza, no compile en typescript y' +
+    //     'te des cuenta (que no te darías cuenta por el mecanismo de mirar el arbol de dependencias en base al nombre)', () => {
+    //     interface ICoche {
+    //         arrancar(): void;
+    //         frenar(): void;
+    //     };
+    //     class Coche implements ICoche {
+    //         arrancar(): void {
+    //             console.log('brum brum');
+    //         }
+    //         frenar(): void {
+    //             console.log('ñiiiiii')
+    //         }
+    //     };
+    //
+    //     function f<T, I>(t: T): I {};
+    //     const x = f<Coche, ICoche>(Coche);
+    //
+    //     add({cls: Coche, alias: 'coche'});
+    // });
 
-    it('rancho', () => {
-
-
-        // se podría hacer la api y el nombre de la librería como si fuera un plato de comida.
-        // Por ejemplo, rancho canario;
-        // const rancho = meter(noseque).cocinar()
-        // rancho.coger(ingrediente)
-        //
-        // o algo más internacional tipo ensalada, que además es gracioso porque es un nombre conocido
-
-    });
+    // it('rancho', () => {
+    //
+    //
+    //     // se podría hacer la api y el nombre de la librería como si fuera un plato de comida.
+    //     // Por ejemplo, rancho canario;
+    //     // const rancho = meter(noseque).cocinar()
+    //     // rancho.coger(ingrediente)
+    //     //
+    //     // o algo más internacional tipo ensalada, que además es gracioso porque es un nombre conocido
+    //
+    // });
 
     it('debe devolver instancia que requiere varios subniveles de dependencias', () => {
 
@@ -63,10 +67,12 @@ describe('This library should', () => {
 
         class C {}
 
-        const a = add({cls: A})
-            .add({cls: B})
-            .add({cls: C})
-            .get(A);
+        const a = add({cls: A, alias: 'a'})
+            .add({cls: B, alias: 'b'})
+            .add({cls: C, alias: 'c'})
+            .build().a;
+
+        expect(a instanceof A).toBeTruthy();
     });
 
     it('se debe permitir meter dependencias prioritarias dentro de una dependencia,' +
@@ -83,20 +89,61 @@ describe('This library should', () => {
         }
 
         class C {}
-        class C2 {}
 
-        const a = add({cls: A})
-            .add({cls: B, deps: add({cls: C2, alias: c)}) // se usará C2 al resolver c de b
-            .add({cls: C})
-            .get(A);
+        let c2ConstructorCalled = false;
+
+        class C2 {
+            constructor() {
+                c2ConstructorCalled = true;
+            }
+        }
+
+        const a = add({cls: A, alias: 'a'})
+            .add({cls: B, alias: 'b', deps: add({cls: C2, alias: 'c'})}) // se usará C2 al resolver c de b
+            .add({cls: C, alias: 'c'})
+            .build().a;
+
+        expect(a instanceof A).toBeTruthy();
+        expect(c2ConstructorCalled).toBeTruthy();
     });
 
     it('las dependencias cíclicas no deberían ser válidas', () => {
+        class A {
+            constructor(b: B) {}
+        }
+
+        class B {
+            constructor(a: A) {}
+        }
+
+        expect(() => {
+            add({cls: A, alias: 'a'})
+            .add({cls: B, alias: 'b'})
+            .build();
+        }).toThrow();
     });
 
-    it('al final de la cadena deps se usa el método build que procesa todo', () => {
+    it('por defecto las dependencias no resueltas hacen petar', () => {
+        class A {
+            constructor(b: any) {}
+        }
+
+        expect(() => {
+            add({cls: A, alias: 'a'}).build();
+        }).toThrow();
     });
 
+    it('se pueden permitir dependencias no resueltas opcionalmente', () => {
+        class A {
+            constructor(readonly b: any) {}
+        }
+
+        const a = add({cls: A, alias: 'a'})
+            .build({allowUnresolved: true}).a;
+
+        expect(a.b).toBeUndefined();
+    });
+/*
     it('al final de la cadena deps se puede usar el metodo build con opciones para testear', () => {
     });
 
