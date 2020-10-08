@@ -1,21 +1,14 @@
-import {
-    AsyncType,
-    Binding,
-    Class,
-    FunctionLike,
-    FunctionWithPromiseReturn,
-    FunctionWithReturn,
-    Instance
-} from "./types";
+import {AsyncType, Binding, Class, FunctionLike, FunctionWithReturn, Instance} from "./types";
 import {getArguments} from "./argumentParser";
-
+import {ArrayUtils, PromiseUtils} from "./pollyfills";
 
 
 type Dependency =
     ClassDependency<any, any> |
     FunctionDependency<any, any> |
     ValueDependency<any, any> |
-    AsyncDependency<any, any, any>;
+    AsyncDependency<any, any, any> |
+    UnresolvedDependency;
 
 interface BaseDependency<A extends string> {
     alias: A | [A, ...string[]];
@@ -40,14 +33,19 @@ export interface ValueDependency<A extends string, T> extends BaseDependency<A> 
 export interface AsyncDependency<A extends string, U, T extends AsyncType<U>> extends BaseDependency<A> {
     async: T;
     memoize?: boolean;
+    timeout?: number;
+}
+
+interface UnresolvedDependency extends BaseDependency<any>{
+    unresolved: true;
 }
 
 export function add<A extends string, T extends Class>(dep: ClassDependency<A, T>): DependencyScope<Binding<A, Instance<T>>>;
 export function add<A extends string, T extends FunctionWithReturn>(dep: FunctionDependency<A, T>): DependencyScope<Binding<A, ReturnType<T>>>;
 export function add<A extends string, T>(dep: ValueDependency<A, T>): DependencyScope<Binding<A, T>>;
 export function add<A extends string, U, T extends AsyncType<U>>(dep: AsyncDependency<A, U, T>): DependencyScope<Binding<A, U>>;
-export function add() {
-    return new DependencyScopeImp().add(arguments[0]);
+export function add(dep: any) {
+    return new DependencyScopeImp().add(dep);
 }
 
 export interface DependencyScope<B> {
@@ -55,36 +53,54 @@ export interface DependencyScope<B> {
     add<A extends string, T extends FunctionWithReturn>(dep: FunctionDependency<A, T>): DependencyScope<B & Binding<A, ReturnType<T>>>;
     add<A extends string, T>(dep: ValueDependency<A, T>): DependencyScope<B & Binding<A, T>>;
     add<A extends string, U, T extends AsyncType<U>>(dep: AsyncDependency<A, U, T>): DependencyScope<B & Binding<A, U>>;
-    build(): B;
+    build(options?: BuildOptions): B;
 }
 
-class DependencyScopeImp<B> {
+export interface BuildOptions {
+    allowUnresolved?: boolean; // allows unresolved args and replaces it with undefined
+    caseInsensitive?: boolean; // alias and function arguments case will be ignored when building the dependency tree
+    async?: boolean; // todo podría ser interesante un arbol sincrono o asíncrono exclusivo?
+}
 
-    readonly deps: Dependency[] = [];
+class DependencyScopeImp<B> implements DependencyScope<B>{
+
+    readonly dependencies:  Dependency[] = [];
     readonly aliasUsed = {};
 
     add<A extends string, T extends Class>(dep: ClassDependency<A, T>): DependencyScope<B & Binding<A, Instance<T>>>;
     add<A extends string, T extends FunctionWithReturn>(dep: FunctionDependency<A, T>): DependencyScope<B & Binding<A, ReturnType<T>>>;
     add<A extends string, T>(dep: ValueDependency<A, T>): DependencyScope<B & Binding<A, T>>;
     add<A extends string, U, T extends AsyncType<U>>(dep: AsyncDependency<A, U, T>): DependencyScope<B & Binding<A, U>>;
-    add() {
-        const dep = arguments[0] as Dependency;
+    add(dep: any) {
         AddArgumentsChecker.checkDependency(dep, this.aliasUsed);
-        this.deps.push(dep);
+        this.dependencies.push(dep);
 
         return this;
     }
 
-    build(): B {
+    build(options: BuildOptions = {}): B {
+        const dependencyConstructors: {[key: string]: DepedencyConstructor} = {};
 
+        this.dependencies.forEach(d => {
+            const key = DependencyTreeBuilder.getMainAlias(d);
+            const tree = DependencyTreeBuilder.build(d, this.dependencies, [], options);
+            dependencyConstructors[key] = tree;
+        });
 
-        // hacer objeto con dependencias por alias A: dependencyChain
+        const dependencyBox = {};
 
-        // hacer objeto con propiedades enumerables por cada key del objeto de arriba
-        //Object.defineProperty()
+        Object.keys(dependencyConstructors).forEach(key => {
+            Object.defineProperty(dependencyBox, key, {
+                enumerable: true,
+                get: () => dependencyConstructors[key].get()
+            });
+            Object.defineProperty(dependencyBox, `${key}Async`, {
+                enumerable: true,
+                get: () => dependencyConstructors[key].getAsync()
+            });
+        });
 
-        throw 'not implemented';
-
+        return dependencyBox as B;
     }
 }
 
@@ -142,7 +158,7 @@ class AddArgumentsChecker {
             throw 'deps must be defined properly';
         if (dep.deps instanceof DependencyScopeImp) {
             const sublevelAliasUsed = {};
-            (dep.deps as DependencyScopeImp<any>).deps.forEach(d => this.checkDependency(d, sublevelAliasUsed));
+            (dep.deps as DependencyScopeImp<any>).dependencies.forEach(d => this.checkDependency(d, sublevelAliasUsed));
         }
     }
 
@@ -157,7 +173,115 @@ class AddArgumentsChecker {
 }
 
 
+class DependencyTreeBuilder {
 
+    static build(d: Dependency, globalDeps: Dependency[], chain: any[], options: BuildOptions): DepedencyConstructor {
+
+        const getConstructors = (ref: FunctionLike) => {
+            const updatedChain = this.createChain(ref, chain);
+            return getArguments(ref).map(argName => {
+                const argDep = this.getDependencyFromArgName(argName, d, globalDeps, options.allowUnresolved);
+                return this.build(argDep, globalDeps, updatedChain, options);
+            });
+        };
+
+        if (this.isClass(d)) {
+            return new ClassDependencyConstructor(d.cls, getConstructors(d.cls), d.singleton);
+        }
+
+        if (this.isFunction(d)) {
+            return new FunctionDependencyConstructor(d.fn, getConstructors(d.fn), d.memoize);
+        }
+
+        if (this.isAsyncFunction(d)) {
+            return new AsyncFunctionDependencyConstructor(d.async, getConstructors(d.async), d.memoize, d.timeout);
+        }
+
+        if (this.isValue(d)) {
+            return new ValueDependencyConstructor(d.val, d.copy);
+        }
+
+        if (this.isAsyncValue(d)) {
+            return new AsyncValueDependencyConstructor(d.async, d.timeout);
+        }
+
+        // is will work only if allowUnresolved is on
+        if (this.isUnresolved(d)) {
+            return new UnresolvedDependencyConstructor();
+        }
+
+        throw 'Type error';
+    }
+
+    static getDependencyFromArgName(argName: string, d: Dependency, globalDeps: Dependency[], allowUnresolved?: boolean): Dependency {
+        // first try to find the dependency in the internal dependency list
+        if (d.deps) {
+            const internalDependencies = (d.deps as any as DependencyScopeImp<any>).dependencies;
+            const depFound = ArrayUtils.find(internalDependencies, d => this.isArgInAlias(argName, d));
+            if (depFound)
+                return depFound;
+        }
+
+        // no luck, so now we try with global dependencies
+        const depFound = ArrayUtils.find(globalDeps, d => this.isArgInAlias(argName, d));
+        if (depFound)
+            return depFound;
+
+        // finally no dependency found, so if it is allowed to have unresolved dependencies fine
+
+        if (allowUnresolved)
+            return {
+                unresolved: true,
+                alias: undefined
+            };
+
+        // else boom
+
+        throw `Unresolved dependency ${argName}`;
+    }
+
+    static isArgInAlias(argName: string, d: Dependency) {
+        return argName === d.alias || (d.alias instanceof Array && d.alias.some(a => argName === a));
+    }
+
+    static createChain(ref: any, chain: any[]): any[] {
+        if (chain.some(c => ref === c)) {
+            throw 'Cyclic dependency';
+        }
+        return [...chain, ref];
+    }
+
+    static getMainAlias(dependency: Dependency): string {
+        return typeof dependency.alias === 'string'
+            ? dependency.alias
+            : dependency.alias[0];
+    }
+
+    static isClass(d: Dependency): d is ClassDependency<any, any> {
+        return (d as ClassDependency<any, any>).cls != null;
+    }
+
+    static isFunction(d: Dependency): d is FunctionDependency<any, any> {
+        return (d as FunctionDependency<any, any>).fn != null;
+    }
+
+    static isValue(d: Dependency): d is ValueDependency<any, any> {
+        return (d as ValueDependency<any, any>).val != null;
+    }
+
+    static isAsyncFunction(d: Dependency): d is AsyncDependency<any, any, any> {
+        return typeof (d as AsyncDependency<any, any, any>).async === 'function' ;
+    }
+
+    static isAsyncValue(d: Dependency): d is AsyncDependency<any, any, any> {
+        return (d as AsyncDependency<any, any, any>).async instanceof Promise;
+    }
+
+    static isUnresolved(d: Dependency): d is UnresolvedDependency {
+        return (d as UnresolvedDependency).unresolved != null;
+    }
+
+}
 
 
 interface DepedencyConstructor {
@@ -178,7 +302,7 @@ class ClassDependencyConstructor implements DepedencyConstructor {
     constructor(
         readonly cls: Class,
         readonly args: DepedencyConstructor[],
-        readonly singleton: boolean
+        readonly singleton?: boolean
     ) {
     }
 
@@ -225,7 +349,7 @@ class FunctionDependencyConstructor implements DepedencyConstructor {
     constructor(
         readonly fn: Function,
         readonly args: DepedencyConstructor[],
-        readonly memoize: boolean
+        readonly memoize?: boolean
     ) {}
 
     callFunction() {
@@ -268,7 +392,7 @@ class ValueDependencyConstructor implements DepedencyConstructor {
 
     constructor(
         readonly val: any,
-        readonly copy: boolean
+        readonly copy?: boolean
     ) {
     }
 
@@ -312,7 +436,7 @@ class AsyncValueDependencyConstructor implements DepedencyConstructor {
     }
 
     getAsync() {
-        return this.timeout ? timeout(this.val, this.timeout) : this.val;
+        return this.timeout ? PromiseUtils.timeout(this.val, this.timeout) : this.val;
     }
 
     hasAsyncDependency() {
@@ -330,7 +454,7 @@ class AsyncFunctionDependencyConstructor implements DepedencyConstructor {
     constructor(
         readonly fn: Function,
         readonly args: DepedencyConstructor[],
-        readonly memoize: boolean,
+        readonly memoize?: boolean,
         readonly timeout?: number
     ) {}
 
@@ -340,7 +464,7 @@ class AsyncFunctionDependencyConstructor implements DepedencyConstructor {
 
     async callFunctionAsync() {
         const args = this.timeout
-            ? this.args.map(a => timeout(a.getAsync(), this.timeout as number))
+            ? this.args.map(a => PromiseUtils.timeout(a.getAsync(), this.timeout as number))
             : this.args;
         const resolvedArgs = await Promise.all(args);
         return this.fn.apply(null, resolvedArgs);
@@ -363,41 +487,21 @@ class AsyncFunctionDependencyConstructor implements DepedencyConstructor {
 }
 
 
-function timeout(p: Promise<any>, ms: number) {
-    return Promise.race([
-        p,
-        new Promise((resolve, reject) => setTimeout(reject, ms))
-    ]);
-}
+class UnresolvedDependencyConstructor implements DepedencyConstructor {
 
+    readonly isAsync = false;
 
-class DependencyChainBuilder {
-
-    static build(d: Dependency, siblings: Dependency[], chain: any[] = []) {
-
-
+    get() {
+        return undefined;
     }
 
-    static isClass(d: Dependency): d is ClassDependency<any, any> {
-        return (d as ClassDependency<any, any>).cls != null;
+    getAsync() {
+        return Promise.resolve(undefined);
     }
 
-    static isFunction(d: Dependency): d is FunctionDependency<any, any> {
-        return (d as FunctionDependency<any, any>).fn != null;
+    hasAsyncDependency() {
+        return false;
     }
-
-    static isValue(d: Dependency): d is ValueDependency<any, any> {
-        return (d as ValueDependency<any, any>).val != null;
-    }
-
-    static isAsyncFunction(d: Dependency): d is AsyncDependency<any, any, any> {
-        return typeof (d as AsyncDependency<any, any, any>).async === 'function' ;
-    }
-
-    static isAsyncValue(d: Dependency): d is AsyncDependency<any, any, any> {
-        return (d as AsyncDependency<any, any, any>).async instanceof Promise;
-    }
-
 }
 
 

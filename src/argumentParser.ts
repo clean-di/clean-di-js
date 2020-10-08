@@ -1,5 +1,5 @@
 import {FunctionLike} from "./types";
-import {includes} from "./pollyfills";
+import {ArrayUtils} from "./pollyfills";
 
 const enum FunctionType {
     Function, Class, ArrowFunction
@@ -43,15 +43,15 @@ function getFunctionStructure(fn: FunctionLike): FunctionStructure {
         const fi = src.indexOf('function');
         const bi = src.indexOf('{'); // this before function indicates a class instance
         // 'caller' and 'prototype' also part of function only when in non-strict mode but they are not meaningful
-        return fi < bi && [ 'length', 'prototype', 'name' ].every(p => includes(props, p));
+        return fi < bi && [ 'length', 'prototype', 'name' ].every(p => ArrayUtils.includes(props, p));
     }
     function isClass(props: string[], src: string) {
         const ci = src.indexOf('class');
         const bi = src.indexOf('{'); // this before function indicates a class instance
-        return ci < bi && [ 'length', 'prototype', 'name' ].every(p => includes(props, p));
+        return ci < bi && [ 'length', 'prototype', 'name' ].every(p => ArrayUtils.includes(props, p));
     }
     function isArrow(props: string[]) {
-        return [ 'length', 'name' ].every(p => includes(props, p));
+        return [ 'length', 'name' ].every(p => ArrayUtils.includes(props, p));
     }
 }
 
