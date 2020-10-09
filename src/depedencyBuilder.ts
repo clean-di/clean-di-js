@@ -145,7 +145,7 @@ class AddArgumentsChecker {
     }
 
     static checkBaseDependency(dep: BaseDependency<any>, aliasUsed: object) {
-        const isValid = (s: string) => typeof dep.alias === 'string' && dep.alias.length > 0 && /[a-zA-Z_$][0-9a-zA-Z_$]*/.test(s);
+        const isValid = (s: string) => typeof s === 'string' && s.length > 0 && /[a-zA-Z_$][0-9a-zA-Z_$]*/.test(s);
         const areValid = (ss: string[]) => ss instanceof Array && ss.length > 0 && ss.every(isValid);
         if (!isValid(dep.alias as string) && !areValid(dep.alias as string[]))
             throw 'alias must be a string or an array of strings with a valid javascript variable name';
@@ -165,7 +165,7 @@ class AddArgumentsChecker {
     static checkRepeatedAlias(usedAlias: object, alias: string[]) {
         alias.forEach(a => {
             if (a in usedAlias) {
-                throw `{a} alias already used`;
+                throw `'${a}' alias already used`;
             }
             (usedAlias as any)[a] = true;
         });
@@ -232,7 +232,7 @@ class DependencyTreeBuilder {
         if (allowUnresolved)
             return {
                 unresolved: true,
-                alias: undefined
+                alias: '0'
             };
 
         // else boom

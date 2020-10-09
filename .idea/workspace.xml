@@ -1,13 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="65dc2106-8e89-4d26-ae51-e83f1dc67341" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/argumentParser.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/argumentParser.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cosa.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/cosa.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pollyfills.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pollyfills.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/argumentParser.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/argumentParser.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/depedencyBuilder.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/depedencyBuilder.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/exploration.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/exploration.test.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -35,6 +53,7 @@
   </component>
   <component name="RecentsManager">
     <key name="es6.move.members.recent.items">
+      <recent name="$PROJECT_DIR$/src/pollyfills.ts" />
       <recent name="$PROJECT_DIR$/src/argumentParser.ts" />
       <recent name="$PROJECT_DIR$/src/types.ts" />
     </key>
@@ -42,35 +61,22 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Jest.The argument parser.should parse arrow function without s.arguments">
-    <configuration name="The argument parser" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="npm run test" />
+    </option>
+  </component>
+  <component name="RunManager" selected="Jest.This library should.puede remplazar argumentos de funciones">
+    <configuration name="All Tests" type="JavaScriptTestRunnerJest" nameIsGenerated="true">
       <node-interpreter value="project" />
       <node-options value="" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
-      <scope-kind value="SUITE" />
-      <test-file value="$PROJECT_DIR$/tests/argumentParser.test.ts" />
-      <test-names>
-        <test-name value="The argument parser" />
-      </test-names>
+      <scope-kind value="ALL" />
       <method v="2" />
     </configuration>
-    <configuration name="The argument parser.should parse aaaaaaaaa" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
-      <node-interpreter value="project" />
-      <node-options value="" />
-      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
-      <working-dir value="$PROJECT_DIR$" />
-      <envs />
-      <scope-kind value="TEST" />
-      <test-file value="$PROJECT_DIR$/tests/argumentParser.test.ts" />
-      <test-names>
-        <test-name value="The argument parser" />
-        <test-name value="should parse aaaaaaaaa" />
-      </test-names>
-      <method v="2" />
-    </configuration>
-    <configuration name="The argument parser.should parse arrow function without s.arguments" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+    <configuration name="The argument parser.should parse class with implicit constructor" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
       <node-options value="" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
@@ -80,45 +86,81 @@
       <test-file value="$PROJECT_DIR$/tests/argumentParser.test.ts" />
       <test-names>
         <test-name value="The argument parser" />
-        <test-name value="should parse arrow function without s.arguments" />
+        <test-name value="should parse class with implicit constructor" />
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="The argument parser.should parse empty function" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+    <configuration name="This library should.al definir los deps de clases se debe permitir decir el tipo de vida de sus instancias" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
       <node-options value="" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
       <scope-kind value="TEST" />
-      <test-file value="$PROJECT_DIR$/tests/argumentParser.test.ts" />
+      <test-file value="$PROJECT_DIR$/tests/exploration.test.ts" />
       <test-names>
-        <test-name value="The argument parser" />
-        <test-name value="should parse empty function" />
+        <test-name value="This library should" />
+        <test-name value="al definir los deps de clases se debe permitir decir el tipo de vida de sus instancias" />
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="The argument parser.should parse function as expression" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+    <configuration name="This library should.los alias repetidos no se permiten" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
       <node-options value="" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
       <scope-kind value="TEST" />
-      <test-file value="$PROJECT_DIR$/tests/argumentParser.test.ts" />
+      <test-file value="$PROJECT_DIR$/tests/exploration.test.ts" />
       <test-names>
-        <test-name value="The argument parser" />
-        <test-name value="should parse function as expression" />
+        <test-name value="This library should" />
+        <test-name value="los alias repetidos no se permiten" />
       </test-names>
       <method v="2" />
     </configuration>
+    <configuration name="This library should.puede remplazar argumentos de funciones" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <node-options value="" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/tests/exploration.test.ts" />
+      <test-names>
+        <test-name value="This library should" />
+        <test-name value="puede remplazar argumentos de funciones" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="This library should.se pueden permitir dependencias no resueltas opcionalmente" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <node-options value="" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/tests/exploration.test.ts" />
+      <test-names>
+        <test-name value="This library should" />
+        <test-name value="se pueden permitir dependencias no resueltas opcionalmente" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Jest.All Tests" />
+      <item itemvalue="Jest.The argument parser.should parse class with implicit constructor" />
+      <item itemvalue="Jest.This library should.los alias repetidos no se permiten" />
+      <item itemvalue="Jest.This library should.se pueden permitir dependencias no resueltas opcionalmente" />
+      <item itemvalue="Jest.This library should.al definir los deps de clases se debe permitir decir el tipo de vida de sus instancias" />
+      <item itemvalue="Jest.This library should.puede remplazar argumentos de funciones" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Jest.The argument parser.should parse arrow function without s.arguments" />
-        <item itemvalue="Jest.The argument parser" />
-        <item itemvalue="Jest.The argument parser.should parse function as expression" />
-        <item itemvalue="Jest.The argument parser.should parse empty function" />
-        <item itemvalue="Jest.The argument parser.should parse aaaaaaaaa" />
+        <item itemvalue="Jest.This library should.puede remplazar argumentos de funciones" />
+        <item itemvalue="Jest.This library should.al definir los deps de clases se debe permitir decir el tipo de vida de sus instancias" />
+        <item itemvalue="Jest.This library should.se pueden permitir dependencias no resueltas opcionalmente" />
+        <item itemvalue="Jest.This library should.los alias repetidos no se permiten" />
+        <item itemvalue="Jest.The argument parser.should parse class with implicit constructor" />
       </list>
     </recent_temporary>
   </component>
@@ -132,134 +174,277 @@
       <updated>1600436342249</updated>
       <workItem from="1600436343316" duration="3781000" />
       <workItem from="1600476478967" duration="22614000" />
-      <workItem from="1600563834935" duration="20971000" />
+      <workItem from="1600563834935" duration="21608000" />
+      <workItem from="1601046103353" duration="35000" />
+      <workItem from="1601168851444" duration="2179000" />
+      <workItem from="1601249629976" duration="2805000" />
+      <workItem from="1601338246786" duration="1210000" />
+      <workItem from="1601421265746" duration="8863000" />
+      <workItem from="1601496154282" duration="3065000" />
+      <workItem from="1601850597856" duration="4570000" />
+      <workItem from="1601855743190" duration="4042000" />
+      <workItem from="1601918324018" duration="3153000" />
+      <workItem from="1601987211562" duration="32968000" />
+      <workItem from="1602118565719" duration="9787000" />
+      <workItem from="1602203612450" duration="7737000" />
     </task>
+    <task id="LOCAL-00001" summary="estamos trabajando en ello (con acento tejano)">
+      <created>1600691383201</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1600691383202</updated>
+    </task>
+    <task id="LOCAL-00002" summary="ideas chachis">
+      <created>1601252380466</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1601252380466</updated>
+    </task>
+    <task id="LOCAL-00003" summary="ideas chachis 2">
+      <created>1601259135206</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1601259135206</updated>
+    </task>
+    <task id="LOCAL-00004" summary="más cositas guapas con los tipos">
+      <created>1601859390887</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1601859390887</updated>
+    </task>
+    <task id="LOCAL-00005" summary="las implementaciones tienen los tipos borrados porque en realidad dan igual">
+      <created>1601859782773</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1601859782773</updated>
+    </task>
+    <task id="LOCAL-00006" summary="montones de frikadas nuevas">
+      <created>1602044235225</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1602044235225</updated>
+    </task>
+    <task id="LOCAL-00007" summary="montones de frikadas nuevas">
+      <created>1602044291209</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1602044291209</updated>
+    </task>
+    <task id="LOCAL-00008" summary="implementada la creación del arbol">
+      <created>1602119779860</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1602119779860</updated>
+    </task>
+    <task id="LOCAL-00009" summary="implementados algunos tests y arreglado parseador de argumentos de clase">
+      <created>1602126694195</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1602126694196</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="estamos trabajando en ello (con acento tejano)" />
+    <MESSAGE value="ideas chachis" />
+    <MESSAGE value="ideas chachis 2" />
+    <MESSAGE value="más cositas guapas con los tipos" />
+    <MESSAGE value="las implementaciones tienen los tipos borrados porque en realidad dan igual" />
+    <MESSAGE value="montones de frikadas nuevas" />
+    <MESSAGE value="implementada la creación del arbol" />
+    <MESSAGE value="implementados algunos tests y arreglado parseador de argumentos de clase" />
+    <option name="LAST_COMMIT_MESSAGE" value="implementados algunos tests y arreglado parseador de argumentos de clase" />
+  </component>
   <component name="WindowStateProjectService">
-    <state x="420" y="206" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1600542561337">
+    <state x="420" y="206" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1602027253350">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
-    <state x="420" y="206" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542561337" />
+    <state x="420" y="206" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602027253350" />
     <state x="630" y="343" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1600437388787">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state x="630" y="343" key="#com.intellij.fileTypes.FileTypeChooser/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600437388787" />
-    <state x="534" y="147" key="#com.intellij.ide.util.MemberChooser" timestamp="1600482512727">
-      <screen x="0" y="23" width="1536" height="937" />
+    <state x="668" y="163" key="#com.intellij.ide.util.MemberChooser" timestamp="1602041903726">
+      <screen x="0" y="23" width="1920" height="1057" />
     </state>
-    <state x="534" y="147" key="#com.intellij.ide.util.MemberChooser/0.23.1536.937@0.23.1536.937" timestamp="1600482512727" />
+    <state x="534" y="147" key="#com.intellij.ide.util.MemberChooser/0.23.1536.937@0.23.1536.937" timestamp="1601169561486" />
+    <state x="668" y="163" key="#com.intellij.ide.util.MemberChooser/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602041903726" />
     <state x="409" y="145" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog" timestamp="1600448947895">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state x="409" y="145" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600448947895" />
-    <state x="471" y="133" key="#xdebugger.evaluate" timestamp="1600484365894">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state x="471" y="133" key="#xdebugger.evaluate/0.23.1536.937@0.23.1536.937" timestamp="1600484365894" />
-    <state width="901" height="546" key="DebuggerActiveHint" timestamp="1600486974180">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="901" height="546" key="DebuggerActiveHint/0.23.1536.937@0.23.1536.937" timestamp="1600486974180" />
-    <state width="1481" height="236" key="GridCell.Tab.0.bottom" timestamp="1600569235144">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1481" height="236" key="GridCell.Tab.0.bottom/0.23.1536.937@0.23.1536.937" timestamp="1600569235144" />
-    <state width="1865" height="276" key="GridCell.Tab.0.bottom/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542812107" />
-    <state width="1481" height="236" key="GridCell.Tab.0.center" timestamp="1600569235143">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1481" height="236" key="GridCell.Tab.0.center/0.23.1536.937@0.23.1536.937" timestamp="1600569235143" />
-    <state width="1865" height="276" key="GridCell.Tab.0.center/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542812106" />
-    <state width="1481" height="236" key="GridCell.Tab.0.left" timestamp="1600569235143">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1481" height="236" key="GridCell.Tab.0.left/0.23.1536.937@0.23.1536.937" timestamp="1600569235143" />
-    <state width="1865" height="276" key="GridCell.Tab.0.left/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542812105" />
-    <state width="1481" height="236" key="GridCell.Tab.0.right" timestamp="1600569235144">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1481" height="236" key="GridCell.Tab.0.right/0.23.1536.937@0.23.1536.937" timestamp="1600569235144" />
-    <state width="1865" height="276" key="GridCell.Tab.0.right/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542812106" />
-    <state width="1865" height="342" key="GridCell.Tab.1.bottom" timestamp="1600563831483">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1865" height="342" key="GridCell.Tab.1.bottom/0.23.1536.937@0.23.1536.937" timestamp="1600563831483" />
-    <state width="1865" height="342" key="GridCell.Tab.1.bottom/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542437770" />
-    <state width="1865" height="342" key="GridCell.Tab.1.center" timestamp="1600563831483">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1865" height="342" key="GridCell.Tab.1.center/0.23.1536.937@0.23.1536.937" timestamp="1600563831483" />
-    <state width="1865" height="342" key="GridCell.Tab.1.center/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542437769" />
-    <state width="1865" height="342" key="GridCell.Tab.1.left" timestamp="1600563831483">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1865" height="342" key="GridCell.Tab.1.left/0.23.1536.937@0.23.1536.937" timestamp="1600563831483" />
-    <state width="1865" height="342" key="GridCell.Tab.1.left/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542437769" />
-    <state width="1865" height="342" key="GridCell.Tab.1.right" timestamp="1600563831483">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1865" height="342" key="GridCell.Tab.1.right/0.23.1536.937@0.23.1536.937" timestamp="1600563831483" />
-    <state width="1865" height="342" key="GridCell.Tab.1.right/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542437770" />
-    <state width="1865" height="342" key="GridCell.Tab.2.bottom" timestamp="1600563831484">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1865" height="342" key="GridCell.Tab.2.bottom/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
-    <state width="1865" height="342" key="GridCell.Tab.2.bottom/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542437771" />
-    <state width="1865" height="342" key="GridCell.Tab.2.center" timestamp="1600563831484">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1865" height="342" key="GridCell.Tab.2.center/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
-    <state width="1865" height="342" key="GridCell.Tab.2.center/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542437770" />
-    <state width="1865" height="342" key="GridCell.Tab.2.left" timestamp="1600563831483">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1865" height="342" key="GridCell.Tab.2.left/0.23.1536.937@0.23.1536.937" timestamp="1600563831483" />
-    <state width="1865" height="342" key="GridCell.Tab.2.left/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542437770" />
-    <state width="1865" height="342" key="GridCell.Tab.2.right" timestamp="1600563831484">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1865" height="342" key="GridCell.Tab.2.right/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
-    <state width="1865" height="342" key="GridCell.Tab.2.right/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542437771" />
-    <state width="1865" height="342" key="GridCell.Tab.3.bottom" timestamp="1600563831484">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1865" height="342" key="GridCell.Tab.3.bottom/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
-    <state width="1865" height="342" key="GridCell.Tab.3.bottom/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542437772" />
-    <state width="1865" height="342" key="GridCell.Tab.3.center" timestamp="1600563831484">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1865" height="342" key="GridCell.Tab.3.center/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
-    <state width="1865" height="342" key="GridCell.Tab.3.center/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542437771" />
-    <state width="1865" height="342" key="GridCell.Tab.3.left" timestamp="1600563831484">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1865" height="342" key="GridCell.Tab.3.left/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
-    <state width="1865" height="342" key="GridCell.Tab.3.left/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542437771" />
-    <state width="1865" height="342" key="GridCell.Tab.3.right" timestamp="1600563831484">
-      <screen x="0" y="23" width="1536" height="937" />
-    </state>
-    <state width="1865" height="342" key="GridCell.Tab.3.right/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
-    <state width="1865" height="342" key="GridCell.Tab.3.right/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600542437771" />
-    <state x="622" y="228" width="675" height="655" key="StructurePopup" timestamp="1600540966833">
+    <state x="899" y="176" key="#xdebugger.evaluate" timestamp="1602207518518">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
-    <state x="622" y="228" width="675" height="655" key="StructurePopup/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600540966833" />
-    <state width="625" height="500" key="SwitcherDM" timestamp="1600652484360">
+    <state x="471" y="133" key="#xdebugger.evaluate/0.23.1536.937@0.23.1536.937" timestamp="1600484365894" />
+    <state x="899" y="176" key="#xdebugger.evaluate/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602207518518" />
+    <state width="1127" height="616" key="DebuggerActiveHint" timestamp="1602209548750">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="901" height="546" key="DebuggerActiveHint/0.23.1536.937@0.23.1536.937" timestamp="1600486974180" />
+    <state width="1127" height="616" key="DebuggerActiveHint/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602209548750" />
+    <state width="1894" height="329" key="GridCell.Tab.0.bottom" timestamp="1602211174933">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1481" height="236" key="GridCell.Tab.0.bottom/0.23.1536.937@0.23.1536.937" timestamp="1600569235144" />
+    <state width="1894" height="329" key="GridCell.Tab.0.bottom/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602211174933" />
+    <state width="1894" height="329" key="GridCell.Tab.0.center" timestamp="1602211174932">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1481" height="236" key="GridCell.Tab.0.center/0.23.1536.937@0.23.1536.937" timestamp="1600569235143" />
+    <state width="1894" height="329" key="GridCell.Tab.0.center/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602211174932" />
+    <state width="1894" height="329" key="GridCell.Tab.0.left" timestamp="1602211174932">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1481" height="236" key="GridCell.Tab.0.left/0.23.1536.937@0.23.1536.937" timestamp="1600569235143" />
+    <state width="1894" height="329" key="GridCell.Tab.0.left/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602211174932" />
+    <state width="1894" height="329" key="GridCell.Tab.0.right" timestamp="1602211174932">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1481" height="236" key="GridCell.Tab.0.right/0.23.1536.937@0.23.1536.937" timestamp="1600569235144" />
+    <state width="1894" height="329" key="GridCell.Tab.0.right/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602211174932" />
+    <state width="1894" height="342" key="GridCell.Tab.1.bottom" timestamp="1602210987514">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1865" height="342" key="GridCell.Tab.1.bottom/0.23.1536.937@0.23.1536.937" timestamp="1600563831483" />
+    <state width="1894" height="342" key="GridCell.Tab.1.bottom/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210987514" />
+    <state width="1894" height="342" key="GridCell.Tab.1.center" timestamp="1602210987514">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1865" height="342" key="GridCell.Tab.1.center/0.23.1536.937@0.23.1536.937" timestamp="1600563831483" />
+    <state width="1894" height="342" key="GridCell.Tab.1.center/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210987514" />
+    <state width="1894" height="342" key="GridCell.Tab.1.left" timestamp="1602210987513">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1865" height="342" key="GridCell.Tab.1.left/0.23.1536.937@0.23.1536.937" timestamp="1600563831483" />
+    <state width="1894" height="342" key="GridCell.Tab.1.left/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210987513" />
+    <state width="1894" height="342" key="GridCell.Tab.1.right" timestamp="1602210987514">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1865" height="342" key="GridCell.Tab.1.right/0.23.1536.937@0.23.1536.937" timestamp="1600563831483" />
+    <state width="1894" height="342" key="GridCell.Tab.1.right/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210987514" />
+    <state width="1894" height="342" key="GridCell.Tab.2.bottom" timestamp="1602210987515">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1865" height="342" key="GridCell.Tab.2.bottom/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
+    <state width="1894" height="342" key="GridCell.Tab.2.bottom/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210987515" />
+    <state width="1894" height="342" key="GridCell.Tab.2.center" timestamp="1602210987515">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1865" height="342" key="GridCell.Tab.2.center/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
+    <state width="1894" height="342" key="GridCell.Tab.2.center/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210987515" />
+    <state width="1894" height="342" key="GridCell.Tab.2.left" timestamp="1602210987514">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1865" height="342" key="GridCell.Tab.2.left/0.23.1536.937@0.23.1536.937" timestamp="1600563831483" />
+    <state width="1894" height="342" key="GridCell.Tab.2.left/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210987514" />
+    <state width="1894" height="342" key="GridCell.Tab.2.right" timestamp="1602210987515">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1865" height="342" key="GridCell.Tab.2.right/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
+    <state width="1894" height="342" key="GridCell.Tab.2.right/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210987515" />
+    <state width="1894" height="342" key="GridCell.Tab.3.bottom" timestamp="1602210987516">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1865" height="342" key="GridCell.Tab.3.bottom/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
+    <state width="1894" height="342" key="GridCell.Tab.3.bottom/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210987516" />
+    <state width="1894" height="342" key="GridCell.Tab.3.center" timestamp="1602210987515">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1865" height="342" key="GridCell.Tab.3.center/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
+    <state width="1894" height="342" key="GridCell.Tab.3.center/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210987515" />
+    <state width="1894" height="342" key="GridCell.Tab.3.left" timestamp="1602210987515">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1865" height="342" key="GridCell.Tab.3.left/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
+    <state width="1894" height="342" key="GridCell.Tab.3.left/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210987515" />
+    <state width="1894" height="342" key="GridCell.Tab.3.right" timestamp="1602210987516">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state width="1865" height="342" key="GridCell.Tab.3.right/0.23.1536.937@0.23.1536.937" timestamp="1600563831484" />
+    <state width="1894" height="342" key="GridCell.Tab.3.right/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210987516" />
+    <state x="192" y="118" key="MergeDialog" timestamp="1602119925212">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="192" y="118" key="MergeDialog/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602119925212" />
+    <state x="507" y="263" key="MultipleFileMergeDialog" timestamp="1602119925241">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="507" y="263" key="MultipleFileMergeDialog/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602119925241" />
+    <state x="622" y="228" width="690" height="655" key="StructurePopup" timestamp="1602210465446">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="498" y="205" width="690" height="581" key="StructurePopup/0.23.1536.937@0.23.1536.937" timestamp="1601426122882" />
+    <state x="622" y="228" width="690" height="655" key="StructurePopup/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210465446" />
+    <state width="625" height="500" key="SwitcherDM" timestamp="1601854338025">
       <screen x="0" y="23" width="1536" height="937" />
     </state>
-    <state width="625" height="500" key="SwitcherDM/0.23.1536.937@0.23.1536.937" timestamp="1600652484360" />
-    <state x="518" y="395" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1600577178081">
-      <screen x="0" y="23" width="1536" height="937" />
+    <state width="625" height="500" key="SwitcherDM/0.23.1536.937@0.23.1536.937" timestamp="1601854338025" />
+    <state x="335" y="187" key="Vcs.Push.Dialog.v2" timestamp="1602126698476">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="268" y="168" key="Vcs.Push.Dialog.v2/0.23.1536.937@0.23.1536.937" timestamp="1601859785989" />
+    <state x="335" y="187" key="Vcs.Push.Dialog.v2/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602126698476" />
+    <state x="648" y="443" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1602208258997">
+      <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state x="518" y="395" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1536.937@0.23.1536.937" timestamp="1600577178081" />
-    <state x="349" y="23" width="838" height="1032" key="search.everywhere.popup" timestamp="1600570683387">
-      <screen x="0" y="23" width="1536" height="937" />
+    <state x="648" y="443" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602208258997" />
+    <state x="387" y="224" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1602210330295">
+      <screen x="0" y="23" width="1920" height="1057" />
     </state>
-    <state x="349" y="23" width="838" height="1032" key="search.everywhere.popup/0.23.1536.937@0.23.1536.937" timestamp="1600570683387" />
-    <state x="436" y="23" width="1048" height="1165" key="search.everywhere.popup/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1600544539276" />
+    <state x="387" y="224" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210330295" />
+    <state x="584" y="243" width="751" height="616" key="find.popup" timestamp="1602204687651">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="584" y="243" width="751" height="616" key="find.popup/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602204687651" />
+    <state x="541" y="252" width="838" height="1032" key="run.anything.popup" timestamp="1602026901272">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="541" y="252" width="838" height="1032" key="run.anything.popup/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602026901272" />
+    <state x="436" y="23" width="1048" height="1165" key="search.everywhere.popup" timestamp="1602210835975">
+      <screen x="0" y="23" width="1920" height="1057" />
+    </state>
+    <state x="349" y="23" width="838" height="1032" key="search.everywhere.popup/0.23.1536.937@0.23.1536.937" timestamp="1601859288582" />
+    <state x="436" y="23" width="1048" height="1165" key="search.everywhere.popup/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602210835975" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/argumentParser.ts</url>
+          <line>34</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

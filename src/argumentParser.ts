@@ -19,9 +19,9 @@ function getFunctionStructure(fn: FunctionLike): FunctionStructure {
     if (typeof fn !== 'function')
         throw `The type is ${typeof fn} and type function is required`;
 
-    const name = fn.name;
-    if (name == null || name.length === 0)
-        throw 'Anonymous functions are not supported due to untraceability';
+    // const name = fn.name;
+    // if (name == null || name.length === 0)
+    //     throw 'Anonymous functions are not supported due to untraceability';
 
     const props = Object.getOwnPropertyNames(fn);
     const src = getCleanedSource(fn);
@@ -33,9 +33,9 @@ function getFunctionStructure(fn: FunctionLike): FunctionStructure {
         return {type: FunctionType.Class, src};
 
     if (isArrow(props))
-        throw 'Arrow functions are not supported';
+        //throw 'Arrow functions are not supported'; // todo por que pondría yo esto??
         // maybe in a future version we can support arrow somehow
-        //return {type: FunctionType.ArrowFunction, src};
+        return {type: FunctionType.ArrowFunction, src};
 
     throw `The type is composed of ${props} and it is not recognized`;
 

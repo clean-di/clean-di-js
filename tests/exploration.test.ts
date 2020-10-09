@@ -120,7 +120,20 @@ describe('This library should', () => {
             add({cls: A, alias: 'a'})
             .add({cls: B, alias: 'b'})
             .build();
-        }).toThrow();
+        }).toThrow(/Cyclic dependency/);
+    });
+
+    it('los alias repetidos no se permiten', () => {
+
+        class A {}
+
+        class B {}
+
+        expect(()=>{
+            add({cls: A, alias: ['a', 'b', 'c']})
+                .add({cls: B, alias: 'b'})
+                .build();
+        }).toThrow(/alias already used/);
     });
 
     it('por defecto las dependencias no resueltas hacen petar', () => {
@@ -130,7 +143,7 @@ describe('This library should', () => {
 
         expect(() => {
             add({cls: A, alias: 'a'}).build();
-        }).toThrow();
+        }).toThrow(/Unresolved dependency/);
     });
 
     it('se pueden permitir dependencias no resueltas opcionalmente', () => {
@@ -143,151 +156,180 @@ describe('This library should', () => {
 
         expect(a.b).toBeUndefined();
     });
-/*
-    it('al final de la cadena deps se puede usar el metodo build con opciones para testear', () => {
-    });
 
-    it('por defecto el alias para una clase o función es su nombre constructor en minuscula', () => {
-    });
+    // it('al final de la cadena deps se puede usar el metodo build con opciones para testear', () => {
+    // });
+    //
+    // it('por defecto el alias para una clase o función es su nombre constructor en minuscula', () => {
+    // });
+    //
+    // it('las cosas pueden tener más de un alias', () => {
+    // });
+    //
+    // it('por defecto debe usar null cuando no encuentra una dependencia', () => {
+    //
+    //     class A {
+    //         constructor(b: any) {
+    //         }
+    //     }
+    //
+    //     const a = add({cls: A})
+    //         .get(A); // inyectaría b como null
+    // });
+    //
+    // it('podemos especificar que si no encuentra una dependencia, pete al pedir la instancia', () => {
+    //
+    //     class A {
+    //         constructor(b: any) {
+    //         }
+    //     }
+    //
+    //     const a = add({cls: A, nonNullDeps: true})
+    //         .get(A); // entonces petaría porque no encuentra b
+    // });
+    //
+    // it('debe permitir dependencias de tipo función que no sea constructora', () => {
+    //
+    //     const f = (g: () => {}) => {};
+    //     const g = () => {};
+    //
+    //     const nombre = add({arrow: f})
+    //         .add({arrow: g})
+    //         .get<()=>{}>(f);
+    // });
+    //
+    // it('debe permitir obtener una instancia por alias', () => {
+    //
+    //     // ... dependencias
+    //
+    //     const nombre = add(...)
+    //         .get<()=>{}>('alias');
+    // });
+    //
+    // it('debe aceptar valores primitivos como dependencias', () => {
+    //
+    //     const s = 'pepito';
+    //     const n = 1234;
+    //     const b = true;
+    //     // estudiar estos tipos y tipos anidados. debería haber una para si
+    //     // queremos deep clone an proveer las dependencias con deps(<dependencia>, <tipo de clonado>)
+    //     //const l = [1, 2, 3];
+    //     //const o = {a: 1, b: 2};
+    //     //const o = Promise.resolve(noseque); esto puede ser interesante?? o solo para funciones?
+    //
+    //     const nombre = add({val: s, alias:'nombre'}).get<string>('nombre');
+    // });
+    //
+    // it('si las dependencias tipo funciones (que no constructores) devuelven promesas,' +
+    //     ' se deben resolver antes de devolver una instancia', () => {
+    //
+    //     class A {
+    //         constructor(f: any) {
+    //
+    //         }
+    //     };
+    //     const f = async () => {};
+    //
+    //     const a = add(A)
+    //         .add(f)
+    //         .get<Promise<InstanceType<A>>>(A);  // o mejor .getAsync(A) y que sea promesa es implicito
+    // });
+    //
+    // it('debe poderse testear que se tienen todas las dependencias para crear una instancia,' +
+    //     'pero sin crearla. esto sirve para hacer tests unitarios de nuestros settings y no encontrar' +
+    //     'sorpresas en producción', () => {
+    //
+    //     class A {
+    //         constructor(b: B) {
+    //         }
+    //     }
+    //
+    //     class B {
+    //         constructor(c: C) {
+    //         }
+    //     }
+    //
+    //     class C {}
+    //
+    //     const areDepsOk = add({cls: A})
+    //         .add({cls: B})
+    //         .add({cls: C})
+    //         .canGet(A);
+    // });
 
-    it('las cosas pueden tener más de un alias', () => {
-    });
+    it('puede remplazar argumentos de funciones', () => {
+        const suma = (a: number, b: number) => a+b;
+        function resta(a: number, b: number) { return a - b;}
+        const box = add({alias: 'a', val: 1})
+            .add({alias: 'b', val: 2})
+            .add({alias: 's', fn: suma})
+            .add({alias: 'r', fn: resta})
+            .add({alias: 'm', fn: (a: number, b: number) => a * b})
+            .build();
 
-    it('por defecto debe usar null cuando no encuentra una dependencia', () => {
+        const resSuma = box.s;
+        const resResta = box.r;
+        const resMultiplicacion = box.m;
 
-        class A {
-            constructor(b: any) {
-            }
-        }
-
-        const a = add({cls: A})
-            .get(A); // inyectaría b como null
-    });
-
-    it('podemos especificar que si no encuentra una dependencia, pete al pedir la instancia', () => {
-
-        class A {
-            constructor(b: any) {
-            }
-        }
-
-        const a = add({cls: A, nonNullDeps: true})
-            .get(A); // entonces petaría porque no encuentra b
-    });
-
-    it('debe permitir dependencias de tipo función que no sea constructora', () => {
-
-        const f = (g: () => {}) => {};
-        const g = () => {};
-
-        const nombre = add({arrow: f})
-            .add({arrow: g})
-            .get<()=>{}>(f);
-    });
-
-    it('debe permitir obtener una instancia por alias', () => {
-
-        // ... dependencias
-
-        const nombre = add(...)
-            .get<()=>{}>('alias');
-    });
-
-    it('debe aceptar valores primitivos como dependencias', () => {
-
-        const s = 'pepito';
-        const n = 1234;
-        const b = true;
-        // estudiar estos tipos y tipos anidados. debería haber una para si
-        // queremos deep clone an proveer las dependencias con deps(<dependencia>, <tipo de clonado>)
-        //const l = [1, 2, 3];
-        //const o = {a: 1, b: 2};
-        //const o = Promise.resolve(noseque); esto puede ser interesante?? o solo para funciones?
-
-        const nombre = add({val: s, alias:'nombre'}).get<string>('nombre');
-    });
-
-    it('si las dependencias tipo funciones (que no constructores) devuelven promesas,' +
-        ' se deben resolver antes de devolver una instancia', () => {
-
-        class A {
-            constructor(f: any) {
-
-            }
-        };
-        const f = async () => {};
-
-        const a = add(A)
-            .add(f)
-            .get<Promise<InstanceType<A>>>(A);  // o mejor .getAsync(A) y que sea promesa es implicito
-    });
-
-    it('debe poderse testear que se tienen todas las dependencias para crear una instancia,' +
-        'pero sin crearla. esto sirve para hacer tests unitarios de nuestros settings y no encontrar' +
-        'sorpresas en producción', () => {
-
-        class A {
-            constructor(b: B) {
-            }
-        }
-
-        class B {
-            constructor(c: C) {
-            }
-        }
-
-        class C {}
-
-        const areDepsOk = add({cls: A})
-            .add({cls: B})
-            .add({cls: C})
-            .canGet(A);
-    });
+        expect(resSuma).toBe(3);
+        expect(resResta).toBe(-1);
+        expect(resMultiplicacion).toBe(2);
+    })
 
     it('al definir los deps de clases se debe permitir decir el tipo de vida de sus instancias', () => {
 
+        let aCreatedTimes = 0;
+
         class A {
             constructor(b: B) {
+                aCreatedTimes++;
             }
         }
+
+        let bCreatedTimes = 0;
 
         class B {
-            constructor(c: C) {
+            constructor() {
+                bCreatedTimes++;
             }
         }
 
-        class C {}
+        const box = add({cls: A, alias: 'a'}) // se crea cada vez
+            .add({cls: B, alias: 'b', singleton: true})  // se crea una sola vez y se reutiliza
+            .build();
 
-        const areDepsOk = add({cls: A, lifespan: transient}) // se crea cada vez
-            .add({cls: B, lifespan: singleton})  // se crea una sola vez y se reutiliza
-            .add({cls: C, lifespan: }) // por defecto debe ser transient
-            .canGet(A);
+        const a1 = box.a;
+        const a2 = box.a;
+        const b3 = box.b;
+        const b4 = box.b;
+        const b5 = box.b;
 
-        // quizá haya otras lifespan interesantes como singleton que caduque, singleton por key, o yo que se
+        expect(aCreatedTimes).toBe(2);
+        expect(bCreatedTimes).toBe(1);
     });
 
-    it('a las dependencias de tipo funcion se les debe poder configurar el lifespan', () => {
+    // it('a las dependencias de tipo funcion se les debe poder configurar el lifespan', () => {
+    //
+    //     const f = () => {};
+    //     const g = () => {};
+    //
+    //     add({cls: f, lifespan: transient}) // se llama cada vez
+    //     .add({cls: g, lifespan: memoize}) // se llama una vez y se guarda el resultado para las demás veces
+    // });
+    //
+    // it('las dependencias de tipo valor se pueden configurar para clonado profundo o no', () => {
+    // });
+    //
+    //
+    // it('prueba de api', () => {
+    //     const deps = setclass(C1, C2, C3)
+    //         .setclass({constructor: C4, allowNull: true})
+    //         .setclass({constructor: C5, deps: setclass(...)})
+    //         .setfun(f, g)
+    //         .setconst({value: 'pepito', alias: 'nombre', lifespan: 'deepclone')
+    //         .build({throwIfError: true});
+    //     const c3 = deps.setparam('aliasname', 1234).setparam('aliasname', C42).get(C3);
+    //
+    // });
 
-        const f = () => {};
-        const g = () => {};
-
-        add({cls: f, lifespan: transient}) // se llama cada vez
-        .add({cls: g, lifespan: memoize}) // se llama una vez y se guarda el resultado para las demás veces
-    });
-
-    it('las dependencias de tipo valor se pueden configurar para clonado profundo o no', () => {
-    });
-
-
-    it('prueba de api', () => {
-        const deps = setclass(C1, C2, C3)
-            .setclass({constructor: C4, allowNull: true})
-            .setclass({constructor: C5, deps: setclass(...)})
-            .setfun(f, g)
-            .setconst({value: 'pepito', alias: 'nombre', lifespan: 'deepclone')
-            .build({throwIfError: true});
-        const c3 = deps.setparam('aliasname', 1234).setparam('aliasname', C42).get(C3);
-
-    });
-    */
 });
