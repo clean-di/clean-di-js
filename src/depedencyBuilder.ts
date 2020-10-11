@@ -110,7 +110,7 @@ interface UnresolvedDependency extends BaseDependency {
 export interface DependencyScope<B, LA extends string> {
     addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options?: ConstructorOptions): DependencyScope<A extends keyof B ? never : B & Binding<A, Instance<T>>, A>;
 
-    asInterface<I>(): DependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, I>, ''>;
+    as<I>(): DependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, I>, ''>;
 
     addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options?: FunctionOptions): DependencyScope<A extends keyof B ? never : B & Binding<A, ReturnType<T>>, LA>;
 
@@ -147,7 +147,7 @@ class DependencyScopeImp<B, LA extends string> extends BaseDependencyScopeImp im
         return this as any;
     }
 
-    asInterface<I>(): DependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, I>, ''> {
+    as<I>(): DependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, I>, ''> {
         return this as any;
     }
 
@@ -221,7 +221,7 @@ class DependencyScopeImp<B, LA extends string> extends BaseDependencyScopeImp im
 export interface AsyncDependencyScope<B, LA extends string> {
     addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options?: ConstructorOptions): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<Instance<T>>>, A>;
 
-    asInterface<I>(): AsyncDependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, Promise<I>>, ''>;
+    as<I>(): AsyncDependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, Promise<I>>, ''>;
 
     addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options?: FunctionOptions): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<ReturnType<T>>>, LA>;
 
@@ -253,8 +253,8 @@ class AsyncDependencyScopeImp<B, LA extends string> extends BaseDependencyScopeI
     }
 
     // no se por qué pero si descomento la linea buena, el compilador no quiere
-    //asInterface<I>(): AsyncDependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, Promise<I>>, ''> {
-    asInterface<I>(): AsyncDependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, I>, ''> {
+    //as<I>(): AsyncDependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, Promise<I>>, ''> {
+    as<I>(): AsyncDependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, I>, ''> {
         return this as any;
     }
 

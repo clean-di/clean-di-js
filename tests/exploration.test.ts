@@ -31,14 +31,13 @@ describe('This library should', () => {
         };
 
         const x = di
-            .addClass('avion', Biplano)
-            .asInterface<Avion>()
+            .addClass('avion', Biplano).as<Avion>()
             .build().avion;
 
         expect(x.alas).toBe(4);
     });
 
-    it('no se puede reutilizar un identificador', () => {
+    xit('typescript no deja reutilizar un identificador', () => {
 
         class A {};
         class B {};
@@ -66,8 +65,7 @@ describe('This library should', () => {
 
         const box = di
             .addAsync('async', Promise.resolve(1))
-            .addClass('avion', Biplano)
-            .asInterface<Avion>()
+            .addClass('avion', Biplano).as<Avion>()
             .build();
 
         const x = await box.avion;
