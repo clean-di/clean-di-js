@@ -11,7 +11,6 @@ export interface BuildOptions {
     caseInsensitive?: boolean; // alias and function arguments case will be ignored when building the dependency tree
 }
 
-
 type Alias<A extends string> = A | [A, ...string[]];
 
 
@@ -108,15 +107,15 @@ interface UnresolvedDependency extends BaseDependency {
 
 
 export interface DependencyScope<B, LA extends string> {
-    addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options?: ConstructorOptions): DependencyScope<A extends keyof B ? never : B & Binding<A, Instance<T>>, A>;
+    addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options?: ConstructorOptions): A extends keyof B ? never : DependencyScope<B & Binding<A, Instance<T>>, A>;
 
-    as<I>(): DependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, I>, ''>;
+    as<I>(): LA extends '' ? never : DependencyScope<Omit<B, LA> & Binding<LA, I>, ''>;
 
-    addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options?: FunctionOptions): DependencyScope<A extends keyof B ? never : B & Binding<A, ReturnType<T>>, LA>;
+    addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options?: FunctionOptions): A extends keyof B ? never : DependencyScope<B & Binding<A, ReturnType<T>>, LA>;
 
-    addValue<A extends string, T>(alias: Alias<A>, value: T, options?: ValueOptions): DependencyScope<A extends keyof B ? never : B & Binding<A, T>, LA>;
+    addValue<A extends string, T>(alias: Alias<A>, value: T, options?: ValueOptions): A extends keyof B ? never : DependencyScope<B & Binding<A, T>, LA>;
 
-    addUndefined<A extends string>(alias: Alias<A>): DependencyScope<A extends keyof B ? never : B & Binding<A, undefined>, LA>;
+    addUndefined<A extends string>(alias: Alias<A>): A extends keyof B ? never : DependencyScope<B & Binding<A, undefined>, LA>;
 
     build(options?: BuildOptions): B;
 }
@@ -132,7 +131,7 @@ abstract class BaseDependencyScopeImp {
 
 class DependencyScopeImp<B, LA extends string> extends BaseDependencyScopeImp implements DependencyScope<B, LA> {
 
-    addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options: ConstructorOptions = {}): DependencyScope<A extends keyof B ? never : (B & Binding<A, Instance<T>>), A> {
+    addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options: ConstructorOptions = {}): A extends keyof B ? never : DependencyScope<B & Binding<A, Instance<T>>, A> {
 
         const d: ClassDependency = {
             alias: alias instanceof Array ? [...alias] : alias,
@@ -147,11 +146,12 @@ class DependencyScopeImp<B, LA extends string> extends BaseDependencyScopeImp im
         return this as any;
     }
 
-    as<I>(): DependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, I>, ''> {
+    // @ts-ignore
+    as<I>(): LA extends '' ? never : DependencyScope<Omit<B, LA> & Binding<LA, I>, ''> {
         return this as any;
     }
 
-    addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options: FunctionOptions = {}): DependencyScope<A extends keyof B ? never : (B & Binding<A, ReturnType<T>>), LA> {
+    addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options: FunctionOptions = {}): A extends keyof B ? never : DependencyScope<B & Binding<A, ReturnType<T>>, LA> {
 
         const d: FunctionDependency = {
             alias: alias instanceof Array ? [...alias] : alias,
@@ -166,7 +166,7 @@ class DependencyScopeImp<B, LA extends string> extends BaseDependencyScopeImp im
         return this as any;
     }
 
-    addValue<A extends string, T>(alias: Alias<A>, value: T, options: ValueOptions = {}): DependencyScope<A extends keyof B ? never : (B & Binding<A, T>), LA> {
+    addValue<A extends string, T>(alias: Alias<A>, value: T, options: ValueOptions = {}): A extends keyof B ? never : DependencyScope<B & Binding<A, T>, LA> {
 
         const d: ValueDependency = {
             alias: alias instanceof Array ? [...alias] : alias,
@@ -181,7 +181,7 @@ class DependencyScopeImp<B, LA extends string> extends BaseDependencyScopeImp im
         return this as any;
     }
 
-    addUndefined<A extends string>(alias: Alias<A>): DependencyScope<A extends keyof B ? never : (B & Binding<A, undefined>), LA> {
+    addUndefined<A extends string>(alias: Alias<A>): A extends keyof B ? never : DependencyScope<B & Binding<A, undefined>, LA> {
 
         const d: UnresolvedDependency = {
             alias: alias instanceof Array ? [...alias] : alias,
@@ -219,17 +219,17 @@ class DependencyScopeImp<B, LA extends string> extends BaseDependencyScopeImp im
 
 
 export interface AsyncDependencyScope<B, LA extends string> {
-    addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options?: ConstructorOptions): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<Instance<T>>>, A>;
+    addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options?: ConstructorOptions): A extends keyof B ? never : AsyncDependencyScope<B & Binding<A, Promise<Instance<T>>>, A>;
 
-    as<I>(): AsyncDependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, Promise<I>>, ''>;
+    as<I>(): LA extends '' ? never : AsyncDependencyScope<Omit<B, LA> & Binding<LA, Promise<I>>, ''>;
 
-    addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options?: FunctionOptions): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<ReturnType<T>>>, LA>;
+    addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options?: FunctionOptions): A extends keyof B ? never : AsyncDependencyScope<B & Binding<A, Promise<ReturnType<T>>>, LA>;
 
-    addValue<A extends string, T>(alias: Alias<A>, value: T, options?: ValueOptions): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<T>>, LA>;
+    addValue<A extends string, T>(alias: Alias<A>, value: T, options?: ValueOptions): A extends keyof B ? never : AsyncDependencyScope<B & Binding<A, Promise<T>>, LA>;
 
-    addAsync<A extends string, U, T extends AsyncType<U>>(alias: Alias<A>, async: AsyncType<U>, options?: AsyncOptions): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<U>>, LA>;
+    addAsync<A extends string, U, T extends AsyncType<U>>(alias: Alias<A>, async: AsyncType<U>, options?: AsyncOptions): A extends keyof B ? never : AsyncDependencyScope<B & Binding<A, Promise<U>>, LA>;
 
-    addUndefined<A extends string>(alias: Alias<A>): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<undefined>>, LA>;
+    addUndefined<A extends string>(alias: Alias<A>): A extends keyof B ? never : AsyncDependencyScope<B & Binding<A, Promise<undefined>>, LA>;
 
     build(options?: BuildOptions): B;
 }
@@ -237,7 +237,7 @@ export interface AsyncDependencyScope<B, LA extends string> {
 
 class AsyncDependencyScopeImp<B, LA extends string> extends BaseDependencyScopeImp implements AsyncDependencyScope<B, LA> {
 
-    addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options: ConstructorOptions = {}): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<Instance<T>>>, A> {
+    addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options: ConstructorOptions = {}): A extends keyof B ? never : AsyncDependencyScope<B & Binding<A, Promise<Instance<T>>>, A> {
 
         const d: ClassDependency = {
             alias: alias instanceof Array ? [...alias] : alias,
@@ -254,11 +254,12 @@ class AsyncDependencyScopeImp<B, LA extends string> extends BaseDependencyScopeI
 
     // no se por qué pero si descomento la linea buena, el compilador no quiere
     //as<I>(): AsyncDependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, Promise<I>>, ''> {
-    as<I>(): AsyncDependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, I>, ''> {
+    // @ts-ignore
+    as<I>(): LA extends '' ? never : AsyncDependencyScope<Omit<B, LA> & Binding<LA, Promise<I>>, ''> {
         return this as any;
     }
 
-    addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options: FunctionOptions = {}): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<ReturnType<T>>>, LA> {
+    addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options: FunctionOptions = {}): A extends keyof B ? never : AsyncDependencyScope<B & Binding<A, Promise<ReturnType<T>>>, LA> {
 
         const d: FunctionDependency = {
             alias: alias instanceof Array ? [...alias] : alias,
@@ -273,7 +274,7 @@ class AsyncDependencyScopeImp<B, LA extends string> extends BaseDependencyScopeI
         return this as any;
     }
 
-    addValue<A extends string, T>(alias: Alias<A>, value: T, options: ValueOptions = {}): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<T>>, LA> {
+    addValue<A extends string, T>(alias: Alias<A>, value: T, options: ValueOptions = {}): A extends keyof B ? never : AsyncDependencyScope<B & Binding<A, Promise<T>>, LA> {
 
         const d: ValueDependency = {
             alias: alias instanceof Array ? [...alias] : alias,
@@ -288,7 +289,7 @@ class AsyncDependencyScopeImp<B, LA extends string> extends BaseDependencyScopeI
         return this as any;
     }
 
-    addAsync<A extends string, U, T extends AsyncType<U>>(alias: Alias<A>, async: AsyncType<U>, options: AsyncOptions = {}): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<U>>, LA> {
+    addAsync<A extends string, U, T extends AsyncType<U>>(alias: Alias<A>, async: AsyncType<U>, options: AsyncOptions = {}): A extends keyof B ? never : AsyncDependencyScope<B & Binding<A, Promise<U>>, LA> {
 
         const d: AsyncDependency = {
             alias: alias instanceof Array ? [...alias] : alias,
@@ -304,7 +305,7 @@ class AsyncDependencyScopeImp<B, LA extends string> extends BaseDependencyScopeI
         return this as any;
     }
 
-    addUndefined<A extends string>(alias: Alias<A>): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<undefined>>, LA> {
+    addUndefined<A extends string>(alias: Alias<A>): A extends keyof B ? never : AsyncDependencyScope<B & Binding<A, Promise<undefined>>, LA> {
         const d: UnresolvedDependency = {
             alias: alias instanceof Array ? [...alias] : alias,
             unresolved: true,

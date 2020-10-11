@@ -1,6 +1,11 @@
 import {di} from "../src/depedencyBuilder";
+import {ClassParam1, ClassParam2} from "../src/utilityTypes";
 
 describe('This library should', () => {
+
+    it('esto se podría llamar godi', () => {
+        // por good old dependency injection
+    });
 
     it('', () => {
     // echar un ojo aquí para más ideas https://github.com/codemix/ts-sql/blob/master/src/Parser.ts
@@ -37,20 +42,17 @@ describe('This library should', () => {
         expect(x.alas).toBe(4);
     });
 
-    xit('typescript no deja reutilizar un identificador', () => {
-
-        class A {};
-        class B {};
-
-        const box = di
-            .addClass('x', A)
-            .addClass('x', B)
-            .build();
-
-        // esto peta el compilador
-        // box.x
-
-    });
+    // it('typescript no deja reutilizar un identificador', () => {
+    //
+    //     class A {};
+    //     class B {};
+    //
+    //     const box = di
+    //         .addClass('x', A)
+    //         .addClass('x', B)// el compilador no dejaría pasar de aquí
+    //         .build();
+    //
+    // });
 
     it('se debe poder forzar el tipo de la instancia devuelto asíncrono', async (done) => {
 
