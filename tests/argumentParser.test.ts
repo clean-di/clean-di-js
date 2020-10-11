@@ -146,16 +146,16 @@ describe('The argument parser', () => {
         expect(s.length).toBe(0);
     });
 
-    // transpiler destroys this test but it's very unlikely this is an issue
-    // xit('should not support anonymous classes', () => {
-    //     expect(() => parse(class { })).toThrowError();
-    // });
+    it('should support anonymous classes with no parameters', () => {
+        const s = getArguments(class { });
 
-    it('should not support anonymous function', () => {
-        expect(() => getArguments(function() { })).toThrowError();
+        expect(s.length).toBe(0);
     });
 
-    it('should not support anonymous arrow function', () => {
-        expect(() => getArguments(() => { })).toThrowError();
+    it('should support anonymous classes with parameters', () => {
+        const s = getArguments(class { constructor(a: any, b: any, c: any) {} });
+
+        expect(s.length).toBe(3);
     });
+
 });

@@ -3,83 +3,198 @@ import {getArguments} from "./argumentParser";
 import {ArrayUtils, PromiseUtils} from "./pollyfills";
 
 
-type Dependency =
-    ClassDependency<any, any> |
-    FunctionDependency<any, any> |
-    ValueDependency<any, any> |
-    AsyncDependency<any, any, any> |
-    UnresolvedDependency;
 
-interface BaseDependency<A extends string> {
-    alias: A | [A, ...string[]];
-    deps?: DependencyScope<any>;
-}
 
-export interface ClassDependency<A extends string, T extends Class> extends BaseDependency<A> {
-    cls: T;
-    singleton?: boolean;
-}
-
-export interface FunctionDependency<A extends string, T extends Function> extends BaseDependency<A> {
-    fn: T;
-    memoize?: boolean;
-}
-
-export interface ValueDependency<A extends string, T> extends BaseDependency<A> {
-    val: T;
-    copy?: boolean;
-}
-
-export interface AsyncDependency<A extends string, U, T extends AsyncType<U>> extends BaseDependency<A> {
-    async: T;
-    memoize?: boolean;
-    timeout?: number;
-}
-
-interface UnresolvedDependency extends BaseDependency<any>{
-    unresolved: true;
-}
-
-export function add<A extends string, T extends Class>(dep: ClassDependency<A, T>): DependencyScope<Binding<A, Instance<T>>>;
-export function add<A extends string, T extends FunctionWithReturn>(dep: FunctionDependency<A, T>): DependencyScope<Binding<A, ReturnType<T>>>;
-export function add<A extends string, T>(dep: ValueDependency<A, T>): DependencyScope<Binding<A, T>>;
-export function add<A extends string, U, T extends AsyncType<U>>(dep: AsyncDependency<A, U, T>): DependencyScope<Binding<A, U>>;
-export function add(dep: any) {
-    return new DependencyScopeImp().add(dep);
-}
-
-export interface DependencyScope<B> {
-    add<A extends string, T extends Class>(dep: ClassDependency<A, T>): DependencyScope<B & Binding<A, Instance<T>>>;
-    add<A extends string, T extends FunctionWithReturn>(dep: FunctionDependency<A, T>): DependencyScope<B & Binding<A, ReturnType<T>>>;
-    add<A extends string, T>(dep: ValueDependency<A, T>): DependencyScope<B & Binding<A, T>>;
-    add<A extends string, U, T extends AsyncType<U>>(dep: AsyncDependency<A, U, T>): DependencyScope<B & Binding<A, U>>;
-    build(options?: BuildOptions): B;
-}
 
 export interface BuildOptions {
     allowUnresolved?: boolean; // allows unresolved args and replaces it with undefined
     caseInsensitive?: boolean; // alias and function arguments case will be ignored when building the dependency tree
-    async?: boolean; // todo podría ser interesante un arbol sincrono o asíncrono exclusivo?
 }
 
-class DependencyScopeImp<B> implements DependencyScope<B>{
 
+type Alias<A extends string> = A | [A, ...string[]];
+
+
+export interface DependencyOptions {
+    dependencies?: DependencyScope<any, any>;
+}
+
+
+export interface ConstructorOptions extends DependencyOptions {
+    singleton?: boolean;
+}
+
+
+export interface FunctionOptions extends DependencyOptions {
+    memoize?: boolean;
+}
+
+
+export interface ValueOptions extends DependencyOptions {
+    copy?: boolean;
+}
+
+
+export interface AsyncOptions extends DependencyOptions {
+    memoize?: boolean;
+    timeout?: number;
+}
+
+
+
+
+class DependencyScopeFactory {
+
+    static addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options: ConstructorOptions = {}) {
+        return new DependencyScopeImp().addClass(alias, constructor, options);
+    }
+
+    static addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options: FunctionOptions = {}) {
+        return new DependencyScopeImp().addFunction(alias, fun, options);
+    }
+
+    static addValue<A extends string, T>(alias: Alias<A>, value: T, options: ValueOptions = {}) {
+        return new DependencyScopeImp().addValue(alias, value, options);
+    }
+
+    static addAsync<A extends string, U, T extends AsyncType<U>>(alias: Alias<A>, async: T, options: AsyncOptions = {}) {
+        return new AsyncDependencyScopeImp().addAsync(alias, async, options);
+    }
+}
+
+
+type Dependency =
+    ClassDependency |
+    FunctionDependency |
+    ValueDependency |
+    AsyncDependency |
+    UnresolvedDependency;
+
+
+interface BaseDependency {
+    alias: string | [string, ...string[]];
+    deps?: DependencyScope<any, any>;
+}
+
+
+interface ClassDependency extends BaseDependency {
+    cls: Class;
+    singleton?: boolean;
+}
+
+
+interface FunctionDependency extends BaseDependency {
+    fn: Function;
+    memoize?: boolean;
+}
+
+
+interface ValueDependency extends BaseDependency {
+    val: any;
+    copy?: boolean;
+}
+
+
+interface AsyncDependency extends BaseDependency {
+    async: AsyncType<any>;
+    memoize?: boolean;
+    timeout?: number;
+}
+
+
+interface UnresolvedDependency extends BaseDependency {
+    unresolved: true;
+}
+
+
+export interface DependencyScope<B, LA extends string> {
+    addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options?: ConstructorOptions): DependencyScope<A extends keyof B ? never : B & Binding<A, Instance<T>>, A>;
+
+    asInterface<I>(): DependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, I>, ''>;
+
+    addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options?: FunctionOptions): DependencyScope<A extends keyof B ? never : B & Binding<A, ReturnType<T>>, LA>;
+
+    addValue<A extends string, T>(alias: Alias<A>, value: T, options?: ValueOptions): DependencyScope<A extends keyof B ? never : B & Binding<A, T>, LA>;
+
+    addUndefined<A extends string>(alias: Alias<A>): DependencyScope<A extends keyof B ? never : B & Binding<A, undefined>, LA>;
+
+    build(options?: BuildOptions): B;
+}
+
+
+
+abstract class BaseDependencyScopeImp {
     readonly dependencies:  Dependency[] = [];
     readonly aliasUsed = {};
+}
 
-    add<A extends string, T extends Class>(dep: ClassDependency<A, T>): DependencyScope<B & Binding<A, Instance<T>>>;
-    add<A extends string, T extends FunctionWithReturn>(dep: FunctionDependency<A, T>): DependencyScope<B & Binding<A, ReturnType<T>>>;
-    add<A extends string, T>(dep: ValueDependency<A, T>): DependencyScope<B & Binding<A, T>>;
-    add<A extends string, U, T extends AsyncType<U>>(dep: AsyncDependency<A, U, T>): DependencyScope<B & Binding<A, U>>;
-    add(dep: any) {
-        AddArgumentsChecker.checkDependency(dep, this.aliasUsed);
-        this.dependencies.push(dep);
 
-        return this;
+
+class DependencyScopeImp<B, LA extends string> extends BaseDependencyScopeImp implements DependencyScope<B, LA> {
+
+    addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options: ConstructorOptions = {}): DependencyScope<A extends keyof B ? never : (B & Binding<A, Instance<T>>), A> {
+
+        const d: ClassDependency = {
+            alias: alias instanceof Array ? [...alias] : alias,
+            cls: constructor,
+            singleton: options.singleton,
+            deps: options.dependencies
+        };
+
+        AddArgumentsChecker.checkDependency(d, this.aliasUsed);
+        this.dependencies.push(d);
+
+        return this as any;
+    }
+
+    asInterface<I>(): DependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, I>, ''> {
+        return this as any;
+    }
+
+    addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options: FunctionOptions = {}): DependencyScope<A extends keyof B ? never : (B & Binding<A, ReturnType<T>>), LA> {
+
+        const d: FunctionDependency = {
+            alias: alias instanceof Array ? [...alias] : alias,
+            fn: fun,
+            memoize: options.memoize,
+            deps: options.dependencies
+        };
+
+        AddArgumentsChecker.checkDependency(d, this.aliasUsed);
+        this.dependencies.push(d);
+
+        return this as any;
+    }
+
+    addValue<A extends string, T>(alias: Alias<A>, value: T, options: ValueOptions = {}): DependencyScope<A extends keyof B ? never : (B & Binding<A, T>), LA> {
+
+        const d: ValueDependency = {
+            alias: alias instanceof Array ? [...alias] : alias,
+            val: value,
+            copy: options.copy,
+            deps: options.dependencies
+        };
+
+        AddArgumentsChecker.checkDependency(d, this.aliasUsed);
+        this.dependencies.push(d);
+
+        return this as any;
+    }
+
+    addUndefined<A extends string>(alias: Alias<A>): DependencyScope<A extends keyof B ? never : (B & Binding<A, undefined>), LA> {
+
+        const d: UnresolvedDependency = {
+            alias: alias instanceof Array ? [...alias] : alias,
+            unresolved: true,
+        };
+
+        this.dependencies.push(d);
+
+        return this as any;
     }
 
     build(options: BuildOptions = {}): B {
-        const dependencyConstructors: {[key: string]: DepedencyConstructor} = {};
+        const dependencyConstructors: { [key: string]: DepedencyConstructor } = {};
 
         this.dependencies.forEach(d => {
             const key = DependencyTreeBuilder.getMainAlias(d);
@@ -94,7 +209,125 @@ class DependencyScopeImp<B> implements DependencyScope<B>{
                 enumerable: true,
                 get: () => dependencyConstructors[key].get()
             });
-            Object.defineProperty(dependencyBox, `${key}Async`, {
+        });
+
+        return dependencyBox as B;
+    }
+
+
+}
+
+
+export interface AsyncDependencyScope<B, LA extends string> {
+    addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options?: ConstructorOptions): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<Instance<T>>>, A>;
+
+    asInterface<I>(): AsyncDependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, Promise<I>>, ''>;
+
+    addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options?: FunctionOptions): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<ReturnType<T>>>, LA>;
+
+    addValue<A extends string, T>(alias: Alias<A>, value: T, options?: ValueOptions): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<T>>, LA>;
+
+    addAsync<A extends string, U, T extends AsyncType<U>>(alias: Alias<A>, async: AsyncType<U>, options?: AsyncOptions): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<U>>, LA>;
+
+    addUndefined<A extends string>(alias: Alias<A>): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<undefined>>, LA>;
+
+    build(options?: BuildOptions): B;
+}
+
+
+class AsyncDependencyScopeImp<B, LA extends string> extends BaseDependencyScopeImp implements AsyncDependencyScope<B, LA> {
+
+    addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options: ConstructorOptions = {}): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<Instance<T>>>, A> {
+
+        const d: ClassDependency = {
+            alias: alias instanceof Array ? [...alias] : alias,
+            cls: constructor,
+            singleton: options.singleton,
+            deps: options.dependencies
+        };
+
+        AddArgumentsChecker.checkDependency(d, this.aliasUsed);
+        this.dependencies.push(d);
+
+        return this as any;
+    }
+
+    // no se por qué pero si descomento la linea buena, el compilador no quiere
+    //asInterface<I>(): AsyncDependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, Promise<I>>, ''> {
+    asInterface<I>(): AsyncDependencyScope<LA extends '' ? never : Omit<B, LA> & Binding<LA, I>, ''> {
+        return this as any;
+    }
+
+    addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options: FunctionOptions = {}): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<ReturnType<T>>>, LA> {
+
+        const d: FunctionDependency = {
+            alias: alias instanceof Array ? [...alias] : alias,
+            fn: fun,
+            memoize: options.memoize,
+            deps: options.dependencies
+        };
+
+        AddArgumentsChecker.checkDependency(d, this.aliasUsed);
+        this.dependencies.push(d);
+
+        return this as any;
+    }
+
+    addValue<A extends string, T>(alias: Alias<A>, value: T, options: ValueOptions = {}): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<T>>, LA> {
+
+        const d: ValueDependency = {
+            alias: alias instanceof Array ? [...alias] : alias,
+            val: value,
+            copy: options.copy,
+            deps: options.dependencies
+        };
+
+        AddArgumentsChecker.checkDependency(d, this.aliasUsed);
+        this.dependencies.push(d);
+
+        return this as any;
+    }
+
+    addAsync<A extends string, U, T extends AsyncType<U>>(alias: Alias<A>, async: AsyncType<U>, options: AsyncOptions = {}): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<U>>, LA> {
+
+        const d: AsyncDependency = {
+            alias: alias instanceof Array ? [...alias] : alias,
+            async: async,
+            memoize: options.memoize,
+            timeout: options.timeout,
+            deps: options.dependencies
+        };
+
+        AddArgumentsChecker.checkDependency(d, this.aliasUsed);
+        this.dependencies.push(d);
+
+        return this as any;
+    }
+
+    addUndefined<A extends string>(alias: Alias<A>): AsyncDependencyScope<A extends keyof B ? never : B & Binding<A, Promise<undefined>>, LA> {
+        const d: UnresolvedDependency = {
+            alias: alias instanceof Array ? [...alias] : alias,
+            unresolved: true,
+        };
+
+        this.dependencies.push(d);
+
+        return this as any;
+    }
+
+    build(options: BuildOptions = {}): B {
+        const dependencyConstructors: { [key: string]: DepedencyConstructor } = {};
+
+        this.dependencies.forEach(d => {
+            const key = DependencyTreeBuilder.getMainAlias(d);
+            const tree = DependencyTreeBuilder.build(d, this.dependencies, [], options);
+            dependencyConstructors[key] = tree;
+        });
+
+        const dependencyBox = {};
+
+        Object.keys(dependencyConstructors).forEach(key => {
+            Object.defineProperty(dependencyBox, key, {
                 enumerable: true,
                 get: () => dependencyConstructors[key].getAsync()
             });
@@ -105,46 +338,47 @@ class DependencyScopeImp<B> implements DependencyScope<B>{
 }
 
 
+
 class AddArgumentsChecker {
 
     static checkDependency(dep: Dependency, aliasUsed: object) {
-        if ((dep as ClassDependency<any, any>).cls != null)
-            return this.checkClassDependency(dep as ClassDependency<any, any>, aliasUsed);
-        if ((dep as FunctionDependency<any, any>).fn != null)
-            return this.checkFunctionDependency(dep as FunctionDependency<any, any>, aliasUsed);
-        if ((dep as ValueDependency<any, any>).val != null)
-            return this.checkValueDependency(dep as ValueDependency<any, any>, aliasUsed);
-        if ((dep as AsyncDependency<any, any, any>).async != null)
-            return this.checkAsyncDependency(dep as AsyncDependency<any, any, any>, aliasUsed);
+        if ((dep as ClassDependency).cls != null)
+            return this.checkClassDependency(dep as ClassDependency, aliasUsed);
+        if ((dep as FunctionDependency).fn != null)
+            return this.checkFunctionDependency(dep as FunctionDependency, aliasUsed);
+        if ((dep as ValueDependency).val != null)
+            return this.checkValueDependency(dep as ValueDependency, aliasUsed);
+        if ((dep as AsyncDependency).async != null)
+            return this.checkAsyncDependency(dep as AsyncDependency, aliasUsed);
         throw 'The dependency definition must be either a class, a function, a value or an async. Check the API.';
     }
 
-    static checkClassDependency(dep: ClassDependency<any, any>, aliasUsed: object) {
+    static checkClassDependency(dep: ClassDependency, aliasUsed: object) {
         if (typeof dep.cls != 'function')
             throw 'cls must be a class constructor';
         this.checkBaseDependency(dep, aliasUsed);
     }
 
-    static checkFunctionDependency(dep: FunctionDependency<any, any>, aliasUsed: object) {
+    static checkFunctionDependency(dep: FunctionDependency, aliasUsed: object) {
         if (typeof dep.fn != 'function')
             throw 'fn must be a function';
         this.checkBaseDependency(dep, aliasUsed);
     }
 
-    static checkValueDependency(dep: ValueDependency<any, any>, aliasUsed: object) {
+    static checkValueDependency(dep: ValueDependency, aliasUsed: object) {
         const type = typeof dep.val;
         if (!['number', 'string', 'boolean'].some(t => t === type))
             throw 'val must be a number, a string or a boolean value';
         this.checkBaseDependency(dep, aliasUsed);
     }
 
-    static checkAsyncDependency(dep: AsyncDependency<any, any, any>, aliasUsed: object) {
+    static checkAsyncDependency(dep: AsyncDependency, aliasUsed: object) {
         if (typeof dep.async !== 'function' && !(dep.async instanceof Promise))
             throw 'async must be an async function or a promise';
         this.checkBaseDependency(dep, aliasUsed);
     }
 
-    static checkBaseDependency(dep: BaseDependency<any>, aliasUsed: object) {
+    static checkBaseDependency(dep: BaseDependency, aliasUsed: object) {
         const isValid = (s: string) => typeof s === 'string' && s.length > 0 && /[a-zA-Z_$][0-9a-zA-Z_$]*/.test(s);
         const areValid = (ss: string[]) => ss instanceof Array && ss.length > 0 && ss.every(isValid);
         if (!isValid(dep.alias as string) && !areValid(dep.alias as string[]))
@@ -154,11 +388,11 @@ class AddArgumentsChecker {
             ? this.checkRepeatedAlias(aliasUsed, dep.alias as string[])
             : this.checkRepeatedAlias(aliasUsed, [dep.alias as string]);
 
-        if (dep.deps != null && !(dep.deps instanceof DependencyScopeImp))
+        if (dep.deps != null && !(dep.deps instanceof DependencyScopeImp) && !(dep.deps instanceof AsyncDependencyScopeImp))
             throw 'deps must be defined properly';
-        if (dep.deps instanceof DependencyScopeImp) {
+        if (dep.deps) {
             const sublevelAliasUsed = {};
-            (dep.deps as DependencyScopeImp<any>).dependencies.forEach(d => this.checkDependency(d, sublevelAliasUsed));
+            (dep.deps as BaseDependencyScopeImp).dependencies.forEach(d => this.checkDependency(d, sublevelAliasUsed));
         }
     }
 
@@ -194,7 +428,7 @@ class DependencyTreeBuilder {
         }
 
         if (this.isAsyncFunction(d)) {
-            return new AsyncFunctionDependencyConstructor(d.async, getConstructors(d.async), d.memoize, d.timeout);
+            return new AsyncFunctionDependencyConstructor(d.async as Function, getConstructors(d.async as Function), d.memoize, d.timeout);
         }
 
         if (this.isValue(d)) {
@@ -202,7 +436,7 @@ class DependencyTreeBuilder {
         }
 
         if (this.isAsyncValue(d)) {
-            return new AsyncValueDependencyConstructor(d.async, d.timeout);
+            return new AsyncValueDependencyConstructor(d.async as Promise<any>, d.timeout);
         }
 
         // is will work only if allowUnresolved is on
@@ -216,7 +450,7 @@ class DependencyTreeBuilder {
     static getDependencyFromArgName(argName: string, d: Dependency, globalDeps: Dependency[], allowUnresolved?: boolean): Dependency {
         // first try to find the dependency in the internal dependency list
         if (d.deps) {
-            const internalDependencies = (d.deps as any as DependencyScopeImp<any>).dependencies;
+            const internalDependencies = (d.deps as any as BaseDependencyScopeImp).dependencies;
             const depFound = ArrayUtils.find(internalDependencies, d => this.isArgInAlias(argName, d));
             if (depFound)
                 return depFound;
@@ -257,24 +491,24 @@ class DependencyTreeBuilder {
             : dependency.alias[0];
     }
 
-    static isClass(d: Dependency): d is ClassDependency<any, any> {
-        return (d as ClassDependency<any, any>).cls != null;
+    static isClass(d: Dependency): d is ClassDependency {
+        return (d as ClassDependency).cls != null;
     }
 
-    static isFunction(d: Dependency): d is FunctionDependency<any, any> {
-        return (d as FunctionDependency<any, any>).fn != null;
+    static isFunction(d: Dependency): d is FunctionDependency {
+        return (d as FunctionDependency).fn != null;
     }
 
-    static isValue(d: Dependency): d is ValueDependency<any, any> {
-        return (d as ValueDependency<any, any>).val != null;
+    static isValue(d: Dependency): d is ValueDependency {
+        return (d as ValueDependency).val != null;
     }
 
-    static isAsyncFunction(d: Dependency): d is AsyncDependency<any, any, any> {
-        return typeof (d as AsyncDependency<any, any, any>).async === 'function' ;
+    static isAsyncFunction(d: Dependency): d is AsyncDependency {
+        return typeof (d as AsyncDependency).async === 'function' ;
     }
 
-    static isAsyncValue(d: Dependency): d is AsyncDependency<any, any, any> {
-        return (d as AsyncDependency<any, any, any>).async instanceof Promise;
+    static isAsyncValue(d: Dependency): d is AsyncDependency {
+        return (d as AsyncDependency).async instanceof Promise;
     }
 
     static isUnresolved(d: Dependency): d is UnresolvedDependency {
@@ -527,3 +761,6 @@ export const enum ArgumentNamingStyle {
 // todo se podría usar esto para dejar el tipo del objeto final?
 type ObjectFromT<T> =
     {[key in keyof T]: T[key]}
+
+
+export const di = DependencyScopeFactory;

@@ -15,4 +15,4 @@ export type AsyncType<T> =
     FunctionWithPromiseReturn<T>;
 
 
-export type Binding<Name extends string, I> = {[key in Name]: I};
+export type Binding<Name extends string, T> = {[key in Name]: T};

@@ -1,5 +1,4 @@
-import {add} from "../src/depedencyBuilder";
-import instantiate = WebAssembly.instantiate;
+import {di} from "../src/depedencyBuilder";
 
 describe('This library should', () => {
 
@@ -14,10 +13,67 @@ describe('This library should', () => {
             readonly cosa = 1234;
         };
 
-        const a = add({cls: A, alias: 'a'}).build().a;
+        const a = di.addClass('a', A).build().a;
 
         expect(a.cosa).toBe(1234);
         expect(a instanceof A).toBeTruthy();
+    });
+
+    it('se debe poder forzar el tipo de la instancia devuelto', () => {
+
+        interface Avion {
+            alas: number;
+        }
+
+        class Biplano {
+            readonly alas = 4;
+            readonly color = 'rojo';
+        };
+
+        const x = di
+            .addClass('avion', Biplano)
+            .asInterface<Avion>()
+            .build().avion;
+
+        expect(x.alas).toBe(4);
+    });
+
+    it('no se puede reutilizar un identificador', () => {
+
+        class A {};
+        class B {};
+
+        const box = di
+            .addClass('x', A)
+            .addClass('x', B)
+            .build();
+
+        // esto peta el compilador
+        // box.x
+
+    });
+
+    it('se debe poder forzar el tipo de la instancia devuelto asíncrono', async (done) => {
+
+        interface Avion {
+            alas: number;
+        }
+
+        class Biplano {
+            readonly alas = 4;
+            readonly color = 'rojo';
+        };
+
+        const box = di
+            .addAsync('async', Promise.resolve(1))
+            .addClass('avion', Biplano)
+            .asInterface<Avion>()
+            .build();
+
+        const x = await box.avion;
+
+        expect(x.alas).toBe(4);
+        done();
     });
 
     // xit('las dependencias y sus dependientes se pueden tipar para que si se refactoriza, no compile en typescript y' +
@@ -67,9 +123,10 @@ describe('This library should', () => {
 
         class C {}
 
-        const a = add({cls: A, alias: 'a'})
-            .add({cls: B, alias: 'b'})
-            .add({cls: C, alias: 'c'})
+        const a = di
+            .addClass('a', A)
+            .addClass('b', B)
+            .addClass('c', C)
             .build().a;
 
         expect(a instanceof A).toBeTruthy();
@@ -98,9 +155,10 @@ describe('This library should', () => {
             }
         }
 
-        const a = add({cls: A, alias: 'a'})
-            .add({cls: B, alias: 'b', deps: add({cls: C2, alias: 'c'})}) // se usará C2 al resolver c de b
-            .add({cls: C, alias: 'c'})
+        const a = di
+            .addClass('a', A)
+            .addClass('b', B, {dependencies: di.addClass('c', C2)}) // se usará C2 al resolver c de b
+            .addClass('c', C)
             .build().a;
 
         expect(a instanceof A).toBeTruthy();
@@ -117,9 +175,10 @@ describe('This library should', () => {
         }
 
         expect(() => {
-            add({cls: A, alias: 'a'})
-            .add({cls: B, alias: 'b'})
-            .build();
+            di
+                .addClass('a', A)
+                .addClass('b', B)
+                .build();
         }).toThrow(/Cyclic dependency/);
     });
 
@@ -130,8 +189,9 @@ describe('This library should', () => {
         class B {}
 
         expect(()=>{
-            add({cls: A, alias: ['a', 'b', 'c']})
-                .add({cls: B, alias: 'b'})
+            di
+                .addClass(['a', 'b', 'c'], A)
+                .addClass('b', B)
                 .build();
         }).toThrow(/alias already used/);
     });
@@ -142,16 +202,32 @@ describe('This library should', () => {
         }
 
         expect(() => {
-            add({cls: A, alias: 'a'}).build();
+            di
+                .addClass('a', A)
+                .build();
         }).toThrow(/Unresolved dependency/);
     });
 
-    it('se pueden permitir dependencias no resueltas opcionalmente', () => {
+    it('se pueden decir explícitamente dependencias no resueltas', () => {
         class A {
             constructor(readonly b: any) {}
         }
 
-        const a = add({cls: A, alias: 'a'})
+        const a = di
+            .addClass('a', A)
+            .addUndefined('b')
+            .build().a;
+
+        expect(a.b).toBeUndefined();
+    });
+
+    it('se pueden crear el arbol de dependencias con dependencias no resueltas implícitas', () => {
+        class A {
+            constructor(readonly b: any) {}
+        }
+
+        const a = di
+            .addClass('a', A)
             .build({allowUnresolved: true}).a;
 
         expect(a.b).toBeUndefined();
@@ -260,11 +336,12 @@ describe('This library should', () => {
     it('puede remplazar argumentos de funciones', () => {
         const suma = (a: number, b: number) => a+b;
         function resta(a: number, b: number) { return a - b;}
-        const box = add({alias: 'a', val: 1})
-            .add({alias: 'b', val: 2})
-            .add({alias: 's', fn: suma})
-            .add({alias: 'r', fn: resta})
-            .add({alias: 'm', fn: (a: number, b: number) => a * b})
+        const box = di
+            .addValue('a', 1)
+            .addValue('b', 2)
+            .addFunction('s', suma)
+            .addFunction('r', resta)
+            .addFunction('m', (a: number, b: number) => a * b)
             .build();
 
         const resSuma = box.s;
@@ -294,8 +371,9 @@ describe('This library should', () => {
             }
         }
 
-        const box = add({cls: A, alias: 'a'}) // se crea cada vez
-            .add({cls: B, alias: 'b', singleton: true})  // se crea una sola vez y se reutiliza
+        const box = di
+            .addClass('a', A) // se crea cada vez
+            .addClass('b', B, {singleton: true})  // se crea una sola vez y se reutiliza
             .build();
 
         const a1 = box.a;

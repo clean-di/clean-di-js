@@ -48,7 +48,7 @@ function getFunctionStructure(fn: FunctionLike): FunctionStructure {
     function isClass(props: string[], src: string) {
         const ci = src.indexOf('class');
         const bi = src.indexOf('{'); // this before function indicates a class instance
-        return ci > -1 && ci < bi && [ 'length', 'prototype', 'name' ].every(p => ArrayUtils.includes(props, p));
+        return ci > -1 && ci < bi && [ 'length', 'prototype' ].every(p => ArrayUtils.includes(props, p)); // name prop removed because anonymous classes doesnt have a name
     }
     function isArrow(props: string[]) {
         return [ 'length', 'name' ].every(p => ArrayUtils.includes(props, p));
