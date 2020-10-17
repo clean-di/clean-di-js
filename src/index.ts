@@ -1,9 +1,9 @@
 export {
-    add,
-    ClassDependency,
-    FunctionDependency,
-    ValueDependency,
-    AsyncDependency,
+    DependencyScopeFactory as di,
+    BuildOptions,
     DependencyScope,
-    BuildOptions
+    AsableDependencyScope,
+    AsyncDependencyScope,
+    AsableAsyncDependencyScope,
+    DependencyOptionsType
 } from './depedencyBuilder';

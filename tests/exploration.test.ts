@@ -1,7 +1,31 @@
-import {di} from "../src/depedencyBuilder";
+import {di} from "../src/index";
 import {ClassParam1, ClassParam2} from "../src/utilityTypes";
 
 describe('This library should', () => {
+
+    it('asf', () => {
+        interface Avion {
+            alas: number;
+        }
+
+        class Biplano {
+            readonly alas = 4;
+            readonly color = 'rojo';
+        };
+
+        interface Coche {
+            brum(): void;
+        }
+
+        const noseque = async () => 1;
+
+        const z = di.addUndefined('caca').build();
+
+        const x = di
+            .addClass('avion', Biplano).as<Avion>()
+            .addAsync('noseque', noseque)
+            .build().avion;
+    })
 
     it('esto se podría llamar godi', () => {
         // por good old dependency injection

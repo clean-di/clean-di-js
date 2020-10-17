@@ -20,7 +20,17 @@ export type AsyncType<T> =
     FunctionWithPromiseReturn<T>;
 
 
+export type PromiseReturnType<T> = T extends Promise<infer U> ? U : T;
+
+
+export type StringValueObject<T> = { [key: string]: T };
+
+
 export type Binding<Name extends string, T> = {[key in Name]: T};
+
+export type AsyncBinding<Name extends string, T> = {[key in Name]: Promise<T>};
+
+export type ToAsyncBinding<B extends Binding<any, any>> = {[key in keyof B]: Promise<B[key]>};
 
 
 export type ClassParam1<T extends new (p1: any, ...rest: any) => any> = T extends new(p1: infer P, ...rest: any) => any ? P : never;
