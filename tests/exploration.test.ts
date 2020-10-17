@@ -19,10 +19,13 @@ describe('This library should', () => {
 
         const noseque = async () => 1;
 
+        const f = () => 2;
+
         const z = di.addUndefined('caca').build();
 
         const x = di
             .addClass('avion', Biplano).as<Avion>()
+            .addFunction('g', f)
             .addAsync('noseque', noseque)
             .build().avion;
     })

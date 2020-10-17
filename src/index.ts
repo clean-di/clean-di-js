@@ -5,5 +5,9 @@ export {
     AsableDependencyScope,
     AsyncDependencyScope,
     AsableAsyncDependencyScope,
-    DependencyOptionsType
+    DependencyOptionsType,
+    ConstructorOptions,
+    FunctionOptions,
+    ValueOptions,
+    AsyncOptions
 } from './depedencyBuilder';

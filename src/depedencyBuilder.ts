@@ -123,7 +123,7 @@ type Dependency =
 
 
 interface BaseDependency {
-    alias: string | [string, ...string[]];
+    alias: [string, ...string[]];
     deps?: DependencyOptionsType;
 }
 
@@ -167,7 +167,7 @@ class DependencyScopeImpl {
     addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options: ConstructorOptions = {}) {
 
         const d: ClassDependency = {
-            alias: alias instanceof Array ? [...alias] : alias,
+            alias: alias instanceof Array ? [...alias] : [alias],
             cls: constructor,
             singleton: options.singleton,
             deps: options.dependencies
@@ -182,7 +182,7 @@ class DependencyScopeImpl {
     addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options: FunctionOptions = {}) {
 
         const d: FunctionDependency = {
-            alias: alias instanceof Array ? [...alias] : alias,
+            alias: alias instanceof Array ? [...alias] : [alias],
             fn: fun,
             memoize: options.memoize,
             deps: options.dependencies
@@ -197,7 +197,7 @@ class DependencyScopeImpl {
     addValue<A extends string, T>(alias: Alias<A>, value: T, options: ValueOptions = {}) {
 
         const d: ValueDependency = {
-            alias: alias instanceof Array ? [...alias] : alias,
+            alias: alias instanceof Array ? [...alias] : [alias],
             val: value,
             copy: options.copy,
             deps: options.dependencies
@@ -212,7 +212,7 @@ class DependencyScopeImpl {
     addUndefined<A extends string>(alias: Alias<A>) {
 
         const d: UnresolvedDependency = {
-            alias: alias instanceof Array ? [...alias] : alias,
+            alias: alias instanceof Array ? [...alias] : [alias],
             unresolved: true,
         };
 
@@ -228,7 +228,7 @@ class DependencyScopeImpl {
     addAsync<A extends string, U, T extends AsyncType<U>>(alias: Alias<A>, async: AsyncType<U>, options: AsyncOptions = {}) {
 
         const d: AsyncDependency = {
-            alias: alias instanceof Array ? [...alias] : alias,
+            alias: alias instanceof Array ? [...alias] : [alias],
             async: async,
             memoize: options.memoize,
             timeout: options.timeout,
@@ -308,12 +308,10 @@ class AddArgumentsChecker {
     static checkBaseDependency(dep: BaseDependency, aliasUsed: object) {
         const isValid = (s: string) => typeof s === 'string' && s.length > 0 && /[a-zA-Z_$][0-9a-zA-Z_$]*/.test(s);
         const areValid = (ss: string[]) => ss instanceof Array && ss.length > 0 && ss.every(isValid);
-        if (!isValid(dep.alias as string) && !areValid(dep.alias as string[]))
+        if (!areValid(dep.alias))
             throw 'alias must be a string or an array of strings with a valid javascript variable name';
 
-        dep.alias instanceof Array
-            ? this.checkRepeatedAlias(aliasUsed, dep.alias as string[])
-            : this.checkRepeatedAlias(aliasUsed, [dep.alias as string]);
+        this.checkRepeatedAlias(aliasUsed, dep.alias);
 
         if (dep.deps != null && !(dep.deps instanceof DependencyScopeImpl))
             throw 'deps must be defined properly';
@@ -393,7 +391,7 @@ class DependencyTreeBuilder {
         if (allowUnresolved)
             return {
                 unresolved: true,
-                alias: '0'
+                alias: ['0']
             };
 
         // else boom
@@ -402,7 +400,7 @@ class DependencyTreeBuilder {
     }
 
     static isArgInAlias(argName: string, d: Dependency) {
-        return argName === d.alias || (d.alias instanceof Array && d.alias.some(a => argName === a));
+        return d.alias.some(a => argName === a);
     }
 
     static createChain(ref: any, chain: any[]): any[] {
@@ -413,9 +411,7 @@ class DependencyTreeBuilder {
     }
 
     static getMainAlias(dependency: Dependency): string {
-        return typeof dependency.alias === 'string'
-            ? dependency.alias
-            : dependency.alias[0];
+        return dependency.alias[0];
     }
 
     static isClass(d: Dependency): d is ClassDependency {
