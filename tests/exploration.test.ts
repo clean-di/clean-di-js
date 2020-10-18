@@ -51,6 +51,15 @@ describe('This library should', () => {
         expect(a instanceof A).toBeTruthy();
     });
 
+    it('string values are not valid for alias, only closed literals', () => {
+        let stringValue = 'open';
+        // @ts-ignore
+        di.addUndefined(stringValue); // This doesn't compile which is what the test proves
+        const literalValue = 'closed'
+        di.addUndefined(literalValue);
+        expect(true).toBe(true); // Fake assertion. To really test this remove the ts-ignore and see
+    });
+
     it('se debe poder forzar el tipo de la instancia devuelto', () => {
 
         interface Avion {

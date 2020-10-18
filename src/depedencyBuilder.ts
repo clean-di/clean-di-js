@@ -20,7 +20,8 @@ export interface BuildOptions {
     //caseInsensitive?: boolean; // alias and function arguments case will be ignored when building the dependency tree
 }
 
-type Alias<A extends string> = A | [A, ...string[]];
+type Alias<A extends string> = string extends A ? never : A | [A, ...string[]];
+// todo idea. put many alias types like Alias2 = [A, B], Alias3 = [A, B, C] and set Alias as the union type
 
 
 export type DependencyOptionsType =
@@ -167,6 +168,7 @@ class DependencyScopeImpl {
     addClass<A extends string, T extends Class>(alias: Alias<A>, constructor: T, options: ConstructorOptions = {}) {
 
         const d: ClassDependency = {
+            // @ts-ignore
             alias: alias instanceof Array ? [...alias] : [alias],
             cls: constructor,
             singleton: options.singleton,
@@ -182,6 +184,7 @@ class DependencyScopeImpl {
     addFunction<A extends string, T extends FunctionWithReturn>(alias: Alias<A>, fun: T, options: FunctionOptions = {}) {
 
         const d: FunctionDependency = {
+            // @ts-ignore
             alias: alias instanceof Array ? [...alias] : [alias],
             fn: fun,
             memoize: options.memoize,
@@ -197,6 +200,7 @@ class DependencyScopeImpl {
     addValue<A extends string, T>(alias: Alias<A>, value: T, options: ValueOptions = {}) {
 
         const d: ValueDependency = {
+            // @ts-ignore
             alias: alias instanceof Array ? [...alias] : [alias],
             val: value,
             copy: options.copy,
@@ -212,6 +216,7 @@ class DependencyScopeImpl {
     addUndefined<A extends string>(alias: Alias<A>) {
 
         const d: UnresolvedDependency = {
+            // @ts-ignore
             alias: alias instanceof Array ? [...alias] : [alias],
             unresolved: true,
         };
@@ -228,6 +233,7 @@ class DependencyScopeImpl {
     addAsync<A extends string, U, T extends AsyncType<U>>(alias: Alias<A>, async: AsyncType<U>, options: AsyncOptions = {}) {
 
         const d: AsyncDependency = {
+            // @ts-ignore
             alias: alias instanceof Array ? [...alias] : [alias],
             async: async,
             memoize: options.memoize,

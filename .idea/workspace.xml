@@ -24,10 +24,7 @@
   <component name="ChangeListManager">
     <list default="true" id="65dc2106-8e89-4d26-ae51-e83f1dc67341" name="Default Changelist" comment="varios cositas arregladas">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/depedencyBuilder.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/depedencyBuilder.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utilityTypes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utilityTypes.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/exploration.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/exploration.test.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -199,7 +196,8 @@
       <workItem from="1602437231617" duration="4914000" />
       <workItem from="1602637787802" duration="149000" />
       <workItem from="1602720245268" duration="3115000" />
-      <workItem from="1602882781631" duration="7957000" />
+      <workItem from="1602882781631" duration="9235000" />
+      <workItem from="1602984193026" duration="1762000" />
     </task>
     <task id="LOCAL-00001" summary="estamos trabajando en ello (con acento tejano)">
       <created>1600691383201</created>
@@ -292,7 +290,21 @@
       <option name="project" value="LOCAL" />
       <updated>1602406729117</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="refactor guapo con tipos encadenados">
+      <created>1602898375687</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1602898375687</updated>
+    </task>
+    <task id="LOCAL-00015" summary="refactor de la estructura interna de los alias">
+      <created>1602899112181</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1602899112181</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -325,7 +337,9 @@
     <MESSAGE value="api cambiada, forzado de tipo, mecanismo para evitar duplicidad de claves" />
     <MESSAGE value="refactor" />
     <MESSAGE value="ahora no te deja seguir construyendo la expresión cuando vuelves a utilizar el mismo alias" />
-    <option name="LAST_COMMIT_MESSAGE" value="ahora no te deja seguir construyendo la expresión cuando vuelves a utilizar el mismo alias" />
+    <MESSAGE value="refactor guapo con tipos encadenados" />
+    <MESSAGE value="refactor de la estructura interna de los alias" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor de la estructura interna de los alias" />
   </component>
   <component name="WindowStateProjectService">
     <state x="420" y="206" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1602027253350">
@@ -355,25 +369,25 @@
     </state>
     <state width="901" height="546" key="DebuggerActiveHint/0.23.1536.937@0.23.1536.937" timestamp="1600486974180" />
     <state width="1127" height="616" key="DebuggerActiveHint/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602209548750" />
-    <state width="1510" height="282" key="GridCell.Tab.0.bottom" timestamp="1602896332925">
+    <state width="1510" height="282" key="GridCell.Tab.0.bottom" timestamp="1602899136375">
       <screen x="0" y="23" width="1536" height="937" />
     </state>
-    <state width="1510" height="282" key="GridCell.Tab.0.bottom/0.23.1536.937@0.23.1536.937" timestamp="1602896332925" />
+    <state width="1510" height="282" key="GridCell.Tab.0.bottom/0.23.1536.937@0.23.1536.937" timestamp="1602899136375" />
     <state width="1894" height="329" key="GridCell.Tab.0.bottom/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602406802379" />
-    <state width="1510" height="282" key="GridCell.Tab.0.center" timestamp="1602896332924">
+    <state width="1510" height="282" key="GridCell.Tab.0.center" timestamp="1602899136374">
       <screen x="0" y="23" width="1536" height="937" />
     </state>
-    <state width="1510" height="282" key="GridCell.Tab.0.center/0.23.1536.937@0.23.1536.937" timestamp="1602896332924" />
+    <state width="1510" height="282" key="GridCell.Tab.0.center/0.23.1536.937@0.23.1536.937" timestamp="1602899136374" />
     <state width="1894" height="329" key="GridCell.Tab.0.center/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602406802378" />
-    <state width="1510" height="282" key="GridCell.Tab.0.left" timestamp="1602896332924">
+    <state width="1510" height="282" key="GridCell.Tab.0.left" timestamp="1602899136374">
       <screen x="0" y="23" width="1536" height="937" />
     </state>
-    <state width="1510" height="282" key="GridCell.Tab.0.left/0.23.1536.937@0.23.1536.937" timestamp="1602896332924" />
+    <state width="1510" height="282" key="GridCell.Tab.0.left/0.23.1536.937@0.23.1536.937" timestamp="1602899136374" />
     <state width="1894" height="329" key="GridCell.Tab.0.left/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602406802378" />
-    <state width="1510" height="282" key="GridCell.Tab.0.right" timestamp="1602896332925">
+    <state width="1510" height="282" key="GridCell.Tab.0.right" timestamp="1602899136375">
       <screen x="0" y="23" width="1536" height="937" />
     </state>
-    <state width="1510" height="282" key="GridCell.Tab.0.right/0.23.1536.937@0.23.1536.937" timestamp="1602896332925" />
+    <state width="1510" height="282" key="GridCell.Tab.0.right/0.23.1536.937@0.23.1536.937" timestamp="1602899136375" />
     <state width="1894" height="329" key="GridCell.Tab.0.right/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602406802379" />
     <state width="1894" height="342" key="GridCell.Tab.1.bottom" timestamp="1602387671700">
       <screen x="0" y="23" width="1920" height="1057" />
@@ -452,10 +466,10 @@
       <screen x="0" y="23" width="1536" height="937" />
     </state>
     <state width="625" height="500" key="SwitcherDM/0.23.1536.937@0.23.1536.937" timestamp="1601854338025" />
-    <state x="335" y="187" key="Vcs.Push.Dialog.v2" timestamp="1602406733056">
-      <screen x="0" y="23" width="1920" height="1057" />
+    <state x="268" y="168" key="Vcs.Push.Dialog.v2" timestamp="1602899117041">
+      <screen x="0" y="23" width="1536" height="937" />
     </state>
-    <state x="268" y="168" key="Vcs.Push.Dialog.v2/0.23.1536.937@0.23.1536.937" timestamp="1601859785989" />
+    <state x="268" y="168" key="Vcs.Push.Dialog.v2/0.23.1536.937@0.23.1536.937" timestamp="1602899117041" />
     <state x="335" y="187" key="Vcs.Push.Dialog.v2/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602406733056" />
     <state x="518" y="395" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1602883696097">
       <screen x="0" y="23" width="1536" height="937" />
@@ -474,10 +488,10 @@
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state x="541" y="252" width="838" height="1032" key="run.anything.popup/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602383017969" />
-    <state x="349" y="23" width="838" height="1032" key="search.everywhere.popup" timestamp="1602896241075">
+    <state x="349" y="23" width="838" height="1032" key="search.everywhere.popup" timestamp="1602985445930">
       <screen x="0" y="23" width="1536" height="937" />
     </state>
-    <state x="349" y="23" width="838" height="1032" key="search.everywhere.popup/0.23.1536.937@0.23.1536.937" timestamp="1602896241075" />
+    <state x="349" y="23" width="838" height="1032" key="search.everywhere.popup/0.23.1536.937@0.23.1536.937" timestamp="1602985445930" />
     <state x="436" y="23" width="1048" height="1165" key="search.everywhere.popup/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602437235946" />
   </component>
 </project>
