@@ -23,11 +23,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="65dc2106-8e89-4d26-ae51-e83f1dc67341" name="Default Changelist" comment="varios cositas arregladas">
+      <change afterPath="$PROJECT_DIR$/webpack.config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/depedencyBuilder.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/depedencyBuilder.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pollyfills.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/pollyfills.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utilityTypes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utilityTypes.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/exploration.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/exploration.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -201,7 +201,7 @@
       <workItem from="1602882781631" duration="9235000" />
       <workItem from="1602984193026" duration="1931000" />
       <workItem from="1602986901118" duration="123000" />
-      <workItem from="1603069521129" duration="5844000" />
+      <workItem from="1603069521129" duration="8288000" />
     </task>
     <task id="LOCAL-00001" summary="estamos trabajando en ello (con acento tejano)">
       <created>1600691383201</created>
@@ -315,11 +315,28 @@
       <option name="project" value="LOCAL" />
       <updated>1602986178197</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="singletons + memoize implementado.&#10;arreglados async functions.&#10;testeados singletons, memoize y timeouts">
+      <created>1603075455722</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1603075455722</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+    <option name="exactExcludedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/src/argumentParser.d.ts" />
+        <option value="$PROJECT_DIR$/src/idea para basar los tipos.d.ts" />
+        <option value="$PROJECT_DIR$/src/pollyfills.d.ts" />
+        <option value="$PROJECT_DIR$/src/index.d.ts" />
+        <option value="$PROJECT_DIR$/src/utilityTypes.d.ts" />
+        <option value="$PROJECT_DIR$/src/depedencyBuilder.d.ts" />
+      </list>
+    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -351,7 +368,8 @@
     <MESSAGE value="refactor guapo con tipos encadenados" />
     <MESSAGE value="refactor de la estructura interna de los alias" />
     <MESSAGE value="alias now can only be literals" />
-    <option name="LAST_COMMIT_MESSAGE" value="alias now can only be literals" />
+    <MESSAGE value="singletons + memoize implementado.&#10;arreglados async functions.&#10;testeados singletons, memoize y timeouts" />
+    <option name="LAST_COMMIT_MESSAGE" value="singletons + memoize implementado.&#10;arreglados async functions.&#10;testeados singletons, memoize y timeouts" />
   </component>
   <component name="WindowStateProjectService">
     <state x="420" y="206" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1602027253350">
@@ -381,25 +399,25 @@
     </state>
     <state width="901" height="546" key="DebuggerActiveHint/0.23.1536.937@0.23.1536.937" timestamp="1603074098596" />
     <state width="1127" height="616" key="DebuggerActiveHint/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602209548750" />
-    <state width="1510" height="472" key="GridCell.Tab.0.bottom" timestamp="1603075387593">
+    <state width="1510" height="472" key="GridCell.Tab.0.bottom" timestamp="1603075399128">
       <screen x="0" y="23" width="1536" height="937" />
     </state>
-    <state width="1510" height="472" key="GridCell.Tab.0.bottom/0.23.1536.937@0.23.1536.937" timestamp="1603075387593" />
+    <state width="1510" height="472" key="GridCell.Tab.0.bottom/0.23.1536.937@0.23.1536.937" timestamp="1603075399128" />
     <state width="1894" height="329" key="GridCell.Tab.0.bottom/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602406802379" />
-    <state width="1510" height="472" key="GridCell.Tab.0.center" timestamp="1603075387593">
+    <state width="1510" height="472" key="GridCell.Tab.0.center" timestamp="1603075399127">
       <screen x="0" y="23" width="1536" height="937" />
     </state>
-    <state width="1510" height="472" key="GridCell.Tab.0.center/0.23.1536.937@0.23.1536.937" timestamp="1603075387593" />
+    <state width="1510" height="472" key="GridCell.Tab.0.center/0.23.1536.937@0.23.1536.937" timestamp="1603075399127" />
     <state width="1894" height="329" key="GridCell.Tab.0.center/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602406802378" />
-    <state width="1510" height="472" key="GridCell.Tab.0.left" timestamp="1603075387593">
+    <state width="1510" height="472" key="GridCell.Tab.0.left" timestamp="1603075399126">
       <screen x="0" y="23" width="1536" height="937" />
     </state>
-    <state width="1510" height="472" key="GridCell.Tab.0.left/0.23.1536.937@0.23.1536.937" timestamp="1603075387593" />
+    <state width="1510" height="472" key="GridCell.Tab.0.left/0.23.1536.937@0.23.1536.937" timestamp="1603075399126" />
     <state width="1894" height="329" key="GridCell.Tab.0.left/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602406802378" />
-    <state width="1510" height="472" key="GridCell.Tab.0.right" timestamp="1603075387593">
+    <state width="1510" height="472" key="GridCell.Tab.0.right" timestamp="1603075399127">
       <screen x="0" y="23" width="1536" height="937" />
     </state>
-    <state width="1510" height="472" key="GridCell.Tab.0.right/0.23.1536.937@0.23.1536.937" timestamp="1603075387593" />
+    <state width="1510" height="472" key="GridCell.Tab.0.right/0.23.1536.937@0.23.1536.937" timestamp="1603075399127" />
     <state width="1894" height="329" key="GridCell.Tab.0.right/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602406802379" />
     <state width="1510" height="294" key="GridCell.Tab.1.bottom" timestamp="1603074400958">
       <screen x="0" y="23" width="1536" height="937" />
@@ -500,10 +518,10 @@
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state x="541" y="252" width="838" height="1032" key="run.anything.popup/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602383017969" />
-    <state x="349" y="23" width="838" height="1032" key="search.everywhere.popup" timestamp="1603071866658">
+    <state x="349" y="23" width="838" height="1032" key="search.everywhere.popup" timestamp="1603078777179">
       <screen x="0" y="23" width="1536" height="937" />
     </state>
-    <state x="349" y="23" width="838" height="1032" key="search.everywhere.popup/0.23.1536.937@0.23.1536.937" timestamp="1603071866658" />
+    <state x="349" y="23" width="838" height="1032" key="search.everywhere.popup/0.23.1536.937@0.23.1536.937" timestamp="1603078777179" />
     <state x="436" y="23" width="1048" height="1165" key="search.everywhere.popup/0.23.1920.1057/-1536.143.1536.937@0.23.1920.1057" timestamp="1602437235946" />
   </component>
 </project>
