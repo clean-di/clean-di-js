@@ -16,8 +16,8 @@ export type FunctionWithPromiseReturn<T> = (...args: any) => Promise<T>;
 
 
 export type AsyncType<T> =
-    Promise<T> |
-    FunctionWithPromiseReturn<T>;
+    | Promise<T>
+    | FunctionWithPromiseReturn<T>;
 
 
 export type PromiseReturnType<T> = T extends Promise<infer U> ? U : T;

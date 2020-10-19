@@ -24,7 +24,7 @@ export class PromiseUtils {
     static timeout(p: Promise<any>, ms: number) {
         return Promise.race([
             p,
-            new Promise((resolve, reject) => setTimeout(reject, ms))
+            new Promise((resolve, reject) => setTimeout(() => reject(`async timed out after ${ms} ms`), ms))
         ]);
     }
 }

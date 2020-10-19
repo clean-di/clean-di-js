@@ -389,7 +389,7 @@ describe('This library should', () => {
         expect(resMultiplicacion).toBe(2);
     })
 
-    it('al definir los deps de clases se debe permitir decir el tipo de vida de sus instancias', () => {
+    it('should create a singleton instance for a given class just once', () => {
 
         let aCreatedTimes = 0;
 
@@ -420,6 +420,121 @@ describe('This library should', () => {
 
         expect(aCreatedTimes).toBe(2);
         expect(bCreatedTimes).toBe(1);
+    });
+
+    it('should create a singleton instance for a given local dependency class just once', () => {
+
+        let aCreatedTimes = 0;
+
+        class A {
+            constructor(b: B) {
+                aCreatedTimes++;
+            }
+        }
+
+        let bCreatedTimes = 0;
+
+        class B {
+            constructor(c: C) {
+                bCreatedTimes++;
+            }
+        }
+
+        let cCreatedTimes = 0;
+
+        class C {
+            constructor() {
+                cCreatedTimes++;
+            }
+        }
+
+        const box = di
+            .addClass('a', A) // se crea cada vez
+            .addClass('b', B, {dependencies: di.addClass('c', C, {singleton: true})})
+            .build();
+
+                          // times each dep is called
+        const a1 = box.a; // a1, b1, c1
+        const a2 = box.a; // a2, b2, c2
+        const b3 = box.b; // b3, c3
+        const b4 = box.b; // b4, c3
+
+        expect(aCreatedTimes).toBe(2);
+        expect(bCreatedTimes).toBe(4);
+        expect(cCreatedTimes).toBe(1);
+    });
+
+    it('a function result can be memoized', () => {
+        let fCalled = 0;
+        function f() {
+            fCalled++;
+            return 1;
+        }
+        let gCalled = 0;
+        const g = () => {
+            gCalled++;
+            return 2;
+        };
+        let hCalled = 0;
+        function h(f: number, g: number) {
+            hCalled++;
+            return f+g;
+        }
+
+        const box = di
+            .addFunction('f', f, {memoize: true})
+            .addFunction('g', g, {memoize: true})
+            .addFunction('h', h)
+            .build();
+        const h1 = box.h;
+        const h2 = box.h;
+        const h3 = box.h;
+
+        expect(fCalled).toBe(1);
+        expect(gCalled).toBe(1);
+        expect(hCalled).toBe(3);
+    });
+
+    it('an async function result can be memoized', async done => {
+        let fCalled = 0;
+        function f() {
+            fCalled++;
+            return Promise.resolve(1);
+        }
+        let hCalled = 0;
+        function h(f: number, g: number) {
+            hCalled++;
+            return Promise.resolve(f+g);
+        }
+
+        const box = di
+            .addAsync('f', f, {memoize: true})
+            .addAsync('g', Promise.resolve(2))
+            .addAsync('h', h)
+            .build();
+        const h1 = await box.h;
+        const h2 = await box.h;
+        const h3 = await box.h;
+
+        expect(fCalled).toBe(1);
+        expect(hCalled).toBe(3);
+        done();
+    });
+
+    it('an async can be timed out',  async () => {
+        const slowResponse = new Promise((res, rej) => {
+            setTimeout(()=> res('DATA'), 1500);
+        });
+
+        const box = di
+            .addAsync('slow', slowResponse, {timeout: 1})
+            .build();
+
+        try {
+            const res = await box.slow;
+        } catch(e) {
+            expect(e).toMatch(/async timed out/);
+        }
     });
 
     // it('a las dependencias de tipo funcion se les debe poder configurar el lifespan', () => {

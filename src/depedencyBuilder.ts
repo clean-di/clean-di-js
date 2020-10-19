@@ -3,7 +3,7 @@ import {
     AsyncType,
     Binding,
     Class,
-    FunctionLike,
+    FunctionLike, FunctionWithPromiseReturn,
     FunctionWithReturn,
     Instance, PromiseReturnType, StringValueObject,
     ToAsyncBinding
@@ -25,10 +25,10 @@ type Alias<A extends string> = string extends A ? never : A | [A, ...string[]];
 
 
 export type DependencyOptionsType =
-    DependencyScope<any, any> |
-    AsableDependencyScope<any, any> |
-    AsyncDependencyScope<any, any> |
-    AsableAsyncDependencyScope<any, any>;
+    | DependencyScope<any, any>
+    | AsableDependencyScope<any, any>
+    | AsyncDependencyScope<any, any>
+    | AsableAsyncDependencyScope<any, any>;
 
 export interface DependencyOptions {
     dependencies?: DependencyOptionsType;
@@ -116,11 +116,12 @@ export class DependencyScopeFactory {
 
 
 type Dependency =
-    ClassDependency |
-    FunctionDependency |
-    ValueDependency |
-    AsyncDependency |
-    UnresolvedDependency;
+    | ClassDependency
+    | FunctionDependency
+    | ValueDependency
+    | AsyncValueDependency
+    | AsyncFunctionDependency
+    | UnresolvedDependency;
 
 
 interface BaseDependency {
@@ -132,30 +133,45 @@ interface BaseDependency {
 interface ClassDependency extends BaseDependency {
     cls: Class;
     singleton?: boolean;
+    cachedConstructor?: ClassDependencyConstructor;
 }
 
 
 interface FunctionDependency extends BaseDependency {
     fn: Function;
     memoize?: boolean;
+    cachedConstructor?: FunctionDependencyConstructor;
 }
 
 
 interface ValueDependency extends BaseDependency {
     val: any;
     copy?: boolean;
+    cachedConstructor?: ValueDependencyConstructor;
 }
 
 
-interface AsyncDependency extends BaseDependency {
-    async: AsyncType<any>;
+interface AsyncValueDependency extends BaseDependency {
+    async: Promise<any>;
     memoize?: boolean;
     timeout?: number;
+    cachedConstructor?: AsyncValueDependencyConstructor;
 }
+
+
+interface AsyncFunctionDependency extends BaseDependency {
+    async: FunctionWithPromiseReturn<any>;
+    memoize?: boolean;
+    timeout?: number;
+    cachedConstructor?: AsyncFunctionDependencyConstructor;
+}
+
+type AsyncDependency = AsyncValueDependency | AsyncFunctionDependency;
 
 
 interface UnresolvedDependency extends BaseDependency {
     unresolved: true;
+    cachedConstructor?: UnresolvedDependencyConstructor;
 }
 
 
@@ -232,7 +248,7 @@ class DependencyScopeImpl {
 
     addAsync<A extends string, U, T extends AsyncType<U>>(alias: Alias<A>, async: AsyncType<U>, options: AsyncOptions = {}) {
 
-        const d: AsyncDependency = {
+        const d: AsyncValueDependency | AsyncFunctionDependency = {
             // @ts-ignore
             alias: alias instanceof Array ? [...alias] : [alias],
             async: async,
@@ -351,28 +367,40 @@ class DependencyTreeBuilder {
         };
 
         if (this.isClass(d)) {
-            return new ClassDependencyConstructor(d.cls, getConstructors(d.cls), d.singleton);
+            if (d.cachedConstructor == null)
+                d.cachedConstructor = new ClassDependencyConstructor(d.cls, getConstructors(d.cls), d.singleton);
+            return d.cachedConstructor;
         }
 
         if (this.isFunction(d)) {
-            return new FunctionDependencyConstructor(d.fn, getConstructors(d.fn), d.memoize);
+            if (d.cachedConstructor == null)
+                d.cachedConstructor = new FunctionDependencyConstructor(d.fn, getConstructors(d.fn), d.memoize);
+            return d.cachedConstructor;
         }
 
         if (this.isAsyncFunction(d)) {
-            return new AsyncFunctionDependencyConstructor(d.async as Function, getConstructors(d.async as Function), d.memoize, d.timeout);
+            if (d.cachedConstructor == null)
+                d.cachedConstructor = new AsyncFunctionDependencyConstructor(d.async as Function, getConstructors(d.async as Function), d.memoize, d.timeout);
+            return d.cachedConstructor;
         }
 
         if (this.isValue(d)) {
-            return new ValueDependencyConstructor(d.val, d.copy);
+            if (d.cachedConstructor == null)
+                d.cachedConstructor = new ValueDependencyConstructor(d.val, d.copy);
+            return d.cachedConstructor;
         }
 
         if (this.isAsyncValue(d)) {
-            return new AsyncValueDependencyConstructor(d.async as Promise<any>, d.timeout);
+            if (d.cachedConstructor == null)
+                d.cachedConstructor = new AsyncValueDependencyConstructor(d.async as Promise<any>, d.timeout);
+            return d.cachedConstructor;
         }
 
         // is will work only if allowUnresolved is on
         if (this.isUnresolved(d)) {
-            return new UnresolvedDependencyConstructor();
+            if (d.cachedConstructor == null)
+                d.cachedConstructor = new UnresolvedDependencyConstructor();
+            return d.cachedConstructor;
         }
 
         throw 'Type error';
@@ -432,12 +460,12 @@ class DependencyTreeBuilder {
         return (d as ValueDependency).val != null;
     }
 
-    static isAsyncFunction(d: Dependency): d is AsyncDependency {
-        return typeof (d as AsyncDependency).async === 'function' ;
+    static isAsyncFunction(d: Dependency): d is AsyncFunctionDependency {
+        return typeof (d as AsyncFunctionDependency).async === 'function' ;
     }
 
-    static isAsyncValue(d: Dependency): d is AsyncDependency {
-        return (d as AsyncDependency).async instanceof Promise;
+    static isAsyncValue(d: Dependency): d is AsyncValueDependency {
+        return (d as AsyncValueDependency).async instanceof Promise;
     }
 
     static isUnresolved(d: Dependency): d is UnresolvedDependency {
@@ -628,7 +656,7 @@ class AsyncFunctionDependencyConstructor implements DepedencyConstructor {
     async callFunctionAsync() {
         const args = this.timeout
             ? this.args.map(a => PromiseUtils.timeout(a.getAsync(), this.timeout as number))
-            : this.args;
+            : this.args.map(a => a.getAsync());
         const resolvedArgs = await Promise.all(args);
         return this.fn.apply(null, resolvedArgs);
     }
